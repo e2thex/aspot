@@ -1,0 +1,2 @@
+#!/bin/sh
+nodeunit test
