@@ -46,6 +46,67 @@ exports.uuid = function (test) {
   test.done();
 };
 
+exports.query = {
+  queryCreation: function (test) {
+    test.equal(typeof crud.query, 'function', "Should have query function");
+    attr_trail = crud.query('."as_a"');
+    test.equal(attr_trail.trail.item.predicate, "as_a");
+  
+    test.done();  
+  },
+  getObjectFromEqualPredicateCreation : function (test) {
+    test.equal(typeof crud.query.getObjectFromEqualPredicate,'function', "Should have query.getObjectFromEqualPredicate function");
+    attr_trail = crud.query.getObjectFromEqualPredicate('."as_a"');
+    test.equal(attr_trail.predicate, "as_a");
+    test.throws(function () {
+      attr_trail = crud.query.getObjectFromEqualPredicate('"as_a"');
+    }, " query.getObjectFromEqualPredicate show throw if the query is not parse able");
+    test.done();
+  },
+  trailCreation : function (test) {
+    test.equal(typeof crud.query.trail,'function', "Should have query.trailNode function");
+
+    attr_trail = crud.query.trail('."as_a"');
+    test.equal(attr_trail.item.predicate, "as_a");
+
+    attr_trail = crud.query.trail('."friend_of"."as_a"');
+    test.equal(attr_trail.item.predicate, "as_a", "trail should past the last item off to a getObjectFromEqualPredicate");
+    test.equal(attr_trail.trail.item.predicate, "friend_of", "trail should past the not last item off to a new trail ");
+    test.throws(function () {
+      attr_trail = crud.query.trail('bob');
+    }, " query.trail should throw if the query is not parse able");
+
+    attr_trail = crud.query.trail('[."as_a" EXISTS]');
+    test.equal(attr_trail.item.item.trail.item.predicate, "as_a","trail should return a where for its item");
+
+    test.done();
+  },
+  trailExistsCreation : function (test) {
+    test.equal(typeof crud.query.trailExists,'function', "Should have query.trailexists function");
+
+    attr_trail = crud.query.trailExists('."friend_of"."as_a" EXISTS');
+    test.equal(attr_trail.trail.item.predicate, "as_a", "trailExists should past the trail on to trail");
+    test.equal(attr_trail.trail.trail.item.predicate, "friend_of", "trailExists should pass the trail on to trail");
+    test.throws(function () {
+      attr_trail = crud.query.trailExists('."as_a"');
+    }, " query.trailExists should throw if the query is not parseable");
+    test.done();
+  },
+  whereCreation : function (test) {
+    test.equal(typeof crud.query.where,'function', "Should have query.where function");
+    attr_trail = crud.query.where('."friend_of"."as_a" EXISTS');
+    test.equal(attr_trail.item.trail.item.predicate, "as_a", "trailExists should past the trail on to trail");
+    test.equal(attr_trail.item.trail.trail.item.predicate, "friend_of", "trailExists should pass the trail on to trail");
+/*
+    test.throws(function () {
+      attr_trail = crud.query.trailExists('."as_a"');
+    }, " query.trailExists should throw if the query is not parseable");
+    */
+    test.done();
+  }
+
+}
+
 exports.DB = {
   DBExists : function (test) {
   test.equals(typeof crud.DB, 'function');
@@ -63,6 +124,7 @@ exports.DB = {
     test.equal(variable.final, true, "A db.variable that is not named should be the final one");
     test.done();
   },
+  /*
 
   parseQuery : function(test) {
     test.equal(typeof crud.DB.parseQuery,'function', "DB should have a parseQuery function");
@@ -70,7 +132,10 @@ exports.DB = {
 
     query = DB.parseQuery('.(=)"is_a_owner_of"');
     result = [
-      { subject: { variable: DB.variable(1), }, predicate: { operator: "=", value : "is_a_owner_of", }, object: { variable: DB.variable(), } }
+      { 
+      subject: { variable: DB.variable(1), }, 
+      predicate: { operator: "=", value : "is_a_owner_of", },
+      object: { variable: DB.variable(), } }
     ]
     test.equal(JSON.stringify(query), JSON.stringify(result), "Test attrChain");
 
@@ -142,9 +207,9 @@ exports.DB = {
     }
     varable = exports.variable(exports.uuid());
 
-    */  
     test.done();
   },
+  */
   retrieve : function(test) {
     test.done();
   }
