@@ -39,6 +39,9 @@ helper.testTripletEquals = function (test, message, tri1, tri2, skipUUID) {
     test.equal(tri1.uuid, tri2.uuid, message + ": UUID does not match");
   }
 }
+s = function (obj) {
+  return JSON.stringify(obj);
+}
 
   
 exports.uuid = function (test) {
@@ -46,13 +49,68 @@ exports.uuid = function (test) {
   test.done();
 };
 
+exports.queryInstruction = {
+  lookupCreation: function(test) {
+    test.equal(typeof crud.query.instruction.lookup, 'function', "Should have instuction.lookup function");
+    v0 = crud.query.instruction.variable();
+    v1 = v0.next();
+    v2 = v0.next();
+    inst = crud.query.instruction.lookup(v0, v1, v2);
+    test.equal(s(inst.subject), s(v0), " crud.query.instruction.lookup should return object with matching property subject");
+    test.equal(s(inst.predicate), s(v1), " crud.query.instruction.lookup should return object with matching property predicate");
+    test.equal(s(inst.object), s(v2), " crud.query.instruction.lookup should return object with matching property object");
+    test.equal(inst.type, "LOOKUP", " crud.query.instruction.lookup should return an object with type LOOKUP");
+    test.done();
+  },
+  intersectCreation: function(test) {
+    test.equal(typeof crud.query.instruction.intersect, 'function', "Should have instuction.intersect function");
+    inst = crud.query.instruction.intersect("bob", "joe");
+    test.equal(inst.lhs, "bob", " crud.query.instruction.intersect should return an object with the lhs passed in");
+    test.equal(inst.rhs, "joe", " crud.query.instruction.intersect should return an object with the rhs passed in");
+    test.equal(inst.type, "INTERSECT", " crud.query.instruction should return an object with type LOOKUP");
+    test.done();
+  },
+  lookupPartCreation: function(test) {
+    var lookupPart = crud.query.instruction.lookupPart;
+    test.equal(typeof lookupPart,'function', "should have lookupPart function");
+    l = lookupPart("=", "bob");
+    test.equal(l.operator,"=", "lookupPart should return object with matching operator property")
+    test.equal(l.value,"bob", "lookupPart should return object with matching value property")
+    test.done();
+  },
+  variable : function(test) {
+    var variable = crud.query.instruction.variable;
+    test.equal(typeof variable,'function', "DB should have variable function");
+    v = variable();
+    test.equal(v.final, true, "A db.variable that is not named should be the final one");
+    v = v.next()
+    test.equal(v.name, "1", "A db.variable should have the name that was used to create it");
+    test.equal(v.final, false, "A db.variable that is named should not have final set");
+    test.done();
+  },
+
+}
+
 exports.query = {
   queryCreation: function (test) {
     test.equal(typeof crud.query, 'function', "Should have query function");
-    attr_trail = crud.query('."as_a"');
-    test.equal(attr_trail.trail.item.predicate, "as_a");
-  
+    query = crud.query('."as_a"');
+    test.equal(query.trail.item.predicate, "as_a");
+
     test.done();  
+  },
+  queryCompile: function(test) {
+    var inst = crud.query.instruction;
+    query = crud.query('."as_a"');
+    test.equal(typeof query.compile,'function', "query should have compile method");
+    test.equal(
+      s(crud.query.trail('."as_a"').compile(inst.variable()).instruction),
+      s(query.compile(inst.variable())), 
+      "TrailExist should the the same as the trail"
+    );
+    console.log(crud.query('[."pet_of"."friend_of" EXISTS]."phone_number"').compile());
+
+    test.done();
   },
   getObjectFromEqualPredicateCreation : function (test) {
     test.equal(typeof crud.query.getObjectFromEqualPredicate,'function', "Should have query.getObjectFromEqualPredicate function");
@@ -61,6 +119,20 @@ exports.query = {
     test.throws(function () {
       attr_trail = crud.query.getObjectFromEqualPredicate('"as_a"');
     }, " query.getObjectFromEqualPredicate show throw if the query is not parse able");
+    test.done();
+  },
+  getObjectFromEqualPredicateCompile : function (test) {
+    var inst = crud.query.instruction;
+    trail = crud.query.getObjectFromEqualPredicate('."as_a"');
+    test.equal(typeof trail.compile,'function', "query.getObjectFromEqualPredicate should have compile method");
+    compile = trail.compile(inst.variable());
+    v0 = inst.variable();
+    v1 = v0.next();
+    result = {
+      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v0),
+      variable : v1
+    };
+    test.equal(s(result), s(compile), "Testing Compile of getObjectFromEqualPredicateCompile");
     test.done();
   },
   trailCreation : function (test) {
@@ -81,6 +153,33 @@ exports.query = {
 
     test.done();
   },
+  trailCompile : function (test) {
+    var inst = crud.query.instruction;
+    trail = crud.query.trail('."as_a"');
+    test.equal(typeof trail.compile,'function', "trail should have compile method");
+    v0 = inst.variable();
+    test.equal(
+      s(crud.query.getObjectFromEqualPredicate('."as_a"').compile(v0)), 
+      s(trail.compile(inst.variable())), 
+      "Trail with just a Trail item should compile as if only that item"
+    );
+
+    trail = crud.query.trail('."is_a_friend_of"."as_a"');
+    v0 = inst.variable();
+    rhs = crud.query.getObjectFromEqualPredicate('."as_a"').compile(v0);
+    lhs = crud.query.getObjectFromEqualPredicate('."is_a_friend_of"').compile(rhs.variable);
+    result = {
+      instruction: inst.intersect(lhs.instruction, rhs.instruction),
+      variable: lhs.variable
+    }
+
+    test.equal(
+      s(result),
+      s(trail.compile(inst.variable())),
+      "Trail.compile with trail and item should  a intersection instruction with both sides and the return variable from the lhs"
+    );
+    test.done();
+  },
   trailExistsCreation : function (test) {
     test.equal(typeof crud.query.trailExists,'function', "Should have query.trailexists function");
 
@@ -92,131 +191,54 @@ exports.query = {
     }, " query.trailExists should throw if the query is not parseable");
     test.done();
   },
+  trailExistsCompile : function(test) {
+    var inst = crud.query.instruction;
+    trail = crud.query.trailExists('."as_a" EXISTS');
+    test.equal(typeof trail.compile,'function', "trailExists should have compile method");
+    test.equal(
+      s(crud.query.trail('."as_a"').compile(inst.variable())),
+      s(trail.compile(inst.variable())), 
+      "TrailExist should the the same as the trail"
+    );
+    test.done();
+  },
   whereCreation : function (test) {
     test.equal(typeof crud.query.where,'function', "Should have query.where function");
     attr_trail = crud.query.where('."friend_of"."as_a" EXISTS');
     test.equal(attr_trail.item.trail.item.predicate, "as_a", "trailExists should past the trail on to trail");
     test.equal(attr_trail.item.trail.trail.item.predicate, "friend_of", "trailExists should pass the trail on to trail");
-/*
+    /*
     test.throws(function () {
       attr_trail = crud.query.trailExists('."as_a"');
     }, " query.trailExists should throw if the query is not parseable");
     */
     test.done();
+  },
+  whereCompile : function(test) {
+    var inst = crud.query.instruction;
+    trail = crud.query.where('."as_a" EXISTS');
+    test.equal(typeof trail.compile,'function', "where should have compile method");
+    v0 = inst.variable();
+    result = crud.query.getObjectFromEqualPredicate('."as_a"').compile(v0);
+    result.variable = v0;
+    test.equal(
+      s(result),
+      s(trail.compile(inst.variable())), 
+      "where.compile should compile same as its item but not alter variable"
+    );
+    test.done();
   }
-
 }
-
 exports.DB = {
   DBExists : function (test) {
-  test.equals(typeof crud.DB, 'function');
-  test.done();
-  },
-
-  variable : function(test) {
-    db = crud.DB();
-    test.equal(typeof db.variable,'function', "DB should have variable function");
-    variable = db.variable("1");
-    test.equal(variable.name, "1", "A db.variable should have the name that was used to create it");
-    test.equal(variable.final, false, "A db.variable that is named should not have final set");
-    
-    variable = db.variable();
-    test.equal(variable.final, true, "A db.variable that is not named should be the final one");
+    test.equals(typeof crud.DB, 'function');
     test.done();
   },
-  /*
 
-  parseQuery : function(test) {
-    test.equal(typeof crud.DB.parseQuery,'function', "DB should have a parseQuery function");
-    DB = crud.DB;
-
-    query = DB.parseQuery('.(=)"is_a_owner_of"');
-    result = [
-      { 
-      subject: { variable: DB.variable(1), }, 
-      predicate: { operator: "=", value : "is_a_owner_of", },
-      object: { variable: DB.variable(), } }
-    ]
-    test.equal(JSON.stringify(query), JSON.stringify(result), "Test attrChain");
-
-    query = DB.parseQuery('.(=)"is_friend_of".(=)"is_a_owner_of"');
-    result = [
-      { subject: { variable: DB.variable(2), }, predicate: { operator: "=", value : "is_friend_of", }, object: { variable: DB.variable(1), } },
-      { subject: { variable: DB.variable(1), }, predicate: { operator: "=", value : "is_a_owner_of", }, object: { variable: DB.variable(), } }
-    ]
-    test.equal(JSON.stringify(query), JSON.stringify(result), "Test attrChain Level2");
-
-    query = DB.parseQuery('[.(=)"type_of"].(=)"is_a_owner_of"');
-    result = [
-      {subject: { variable: DB.variable(1), }, 
-       predicate: { operator: "=", value : "type_of", }, 
-       object: { variable: DB.variable(2), } },
-      {subject: { variable: DB.variable(1), }, 
-       predicate: { operator: "=", value : "is_a_owner_of", }, 
-       object: { variable: DB.variable(), } }
-    ]
-    // 
-    // . = attr passthrough
-    // [] where
-    //
-    /*
-    .(=)"is_a_owner_of"
-    s:= v(1), p:=is_a_owner_of, v();
-    .(=)"is_a_owner_of".(=)"is_a"
-    s:= v(2), p:=is_a_owner_of, v(1);
-    s:= v(1), p:=is_a, v();
-    .(=)"is_a_owner_of".(=)"is_a".(=)"type_of"
-    s:is v(4), p:=is_a_owner_of, is v(3);
-    s:is v(2), p:=is_a, is v(1);
-    s:is v(1), p:=type_of, is v();
-
-    [.(=)"is_a" = "dog"].(=)"is_a_owner_of"
-    s:= v(1), p:=is_a,, o:=dog
-    s:= v(1), p:=is_a_owner_of,, o:=v()
-    [.(=)"is_a".(=)"is_a" = "type"].(=)"is_a_owner_of"
-    [."is_a"."is_a" = "type"]."is_a_owner_of"
-    s:= v(1), p:="is_a", o:=v(2)
-    s:= v(2), p:="is_a", 0:="type"
-    s:= v(1), p:="is_a_owner_of", o:=v()
-    [.(ANY).(=)"area_code" = '202'].(=)"adress".(=).zip
-    [.(ANY)."area_code" = '202']."adress"."zip"
-    */
-    /*
-    db = new crud.localTestDB();
-    test.equal(typeof db.variable,'function', "localTestDB should have variable function");
-    s:= v(1), p:=is_a,, o:=dog
-    s:= v(1), p:=is_a_owner_of,, o:=v()
-    
-    values {
-      v(1) : joe, james
-    }
-
-    {
-      subject: {
-        value : ''
-        operator : ''
-      },
-      predicate: {
-        value : ''
-        operator : ''
-      },
-      object: {
-        value : ''
-        operator : ''
-      }
-    }
-    varable = exports.variable(exports.uuid());
-
-    test.done();
-  },
-  */
   retrieve : function(test) {
     test.done();
   }
-
-
 }
-
 exports.triplet = {
   Hash : function (test) {
     var trip = {subject:'bob', predicate:'is_a', object : 'human'};
