@@ -119,12 +119,13 @@ exports.query = {
     var inst = aspot.query.instruction;
     trail = aspot.query.getObjectFromEqualPredicate('."as_a"');
     test.equal(typeof trail.compile,'function', "query.getObjectFromEqualPredicate should have compile method");
-    compile = trail.compile(inst.variable());
     v0 = inst.variable();
     v1 = v0.next();
+    v2 = v0.next();
+    compile = trail.compile(inst.variable().next());
     result = {
-      instruction : inst.lookup(v0, inst.lookupPart("=", "as_a"), v1),
-      variable : v1
+      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v2),
+      variable : v2
     };
     test.equal(s(result), s(compile), "Testing Compile of getObjectFromEqualPredicateCompile");
     test.done();
@@ -372,36 +373,59 @@ exports.localDB = {
     var row2 = ['bob', 'joe', 'jane']
     table.add(row2);
     test.equal(s(table.table), s([row, row2]), "add rows should be pushed to the end");
+    var result = aspot.localDB.lookupTable();
+    result.add(['bob', 'joe', 'sam', 'jane']);
+    var table2 = aspot.localDB.lookupTable();
+    table2.add(['bob', null, 'sam']);
 
+    test.equal(s(table.intersect(table2)), s(result), "intersection should return a new table with the intersection the old table and the one passed in");
 
     test.done();
   },
   retrieve : function(test) {
-    var request = aspot.query('."is_a"').compile();
-    var db = aspot.localDB();
-    trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
-    trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
-    trip3 = {subject:'human', predicate:'type_of', object : 'mammal'};
-    trip4 = {subject:'dog', predicate:'type_of', object : 'mammal'};
-    db.insert(trip1);
-    db.insert(trip2);
-    db.insert(trip3);
-    db.insert(trip4);
+    var db = aspot.localDB(
+      [
+        {subject:'bob', predicate:'is_a', object : 'human'},
+        {subject:'joe', predicate:'is_a', object : 'dog'},
+        {subject:'joe', predicate:'friend_of', object : 'bob'},
+        {subject:'human', predicate:'type_of', object : 'mammal'},
+        {subject:'dog', predicate:'type_of', object : 'mammal'},
+        {subject:'mammal', predicate:'type_of', object : 'thing'}
+      ]
+    );
+    var v0 = aspot.query.instruction.variable();
+    var v1= v0.next();
+    var request = aspot.query.getObjectFromEqualPredicate('."is_a"').compile(v1);
     var result = aspot.localDB.lookupTable();
-    result.add(['bob', 'human']);
-    result.add(['joe', 'dog']);
+    result.add([null, 'bob', 'human']);
+    result.add([null, 'joe', 'dog']);
     test.equal(
       s(db.requestLOOKUP(request.instruction)),
       s(result),
       "The LOOKUP method should return a lookupTable, matching the lookup instruction"
     );
-    
     test.equal(
-      s(db.retrieve(request)),
-      s([db.datum('human'), db.datum('dog')]),
+      s(db.retrieve(request).map(function(d) { return d()})),
+      s([db.datum('human')(), db.datum('dog')()]),
       "retrieve should return datums based on the value of the active variable col"
     );
   
+    var request = aspot.query('."is_a"."type_of"').compile();
+
+    result = db.requestLOOKUP(request.instruction.lhs).intersect(db.requestLOOKUP(request.instruction.rhs));
+    test.equal(
+      s(db.requestINTERSECT(request.instruction)),
+      s(result),
+      "The INTERSECT method should return a lookupTable, matching the INTESECT instruction"
+    );
+    
+    test.equal(
+      s(db.retrieve(request).map(function(d) {return d()})),
+      s([db.datum('mammal')()]),
+      "retrieve should return datums based on the value of the active variable col intersect"
+    );
+
+    console.log(db.query('[."friend_of" EXISTS]."is_a"').map(function(d) {return d()}));
     test.done();
   }
 
