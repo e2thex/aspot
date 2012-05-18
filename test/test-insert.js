@@ -42,13 +42,10 @@ helper.testTripletEquals = function (test, message, tri1, tri2, skipUUID) {
 s = function (obj) {
   return JSON.stringify(obj);
 }
-
-  
 exports.uuid = function (test) {
   helper.testUUID(aspot.uuid, test);
   test.done();
 };
-
 exports.queryInstruction = {
   lookupCreation: function(test) {
     test.equal(typeof aspot.query.instruction.lookup, 'function', "Should have instuction.lookup function");
@@ -88,9 +85,7 @@ exports.queryInstruction = {
     test.equal(v.final, false, "A db.variable that is named should not have final set");
     test.done();
   },
-
 }
-
 exports.query = {
   queryCreation: function (test) {
     test.equal(typeof aspot.query, 'function', "Should have query function");
@@ -104,7 +99,7 @@ exports.query = {
     query = aspot.query('."as_a"');
     test.equal(typeof query.compile,'function', "query should have compile method");
     test.equal(
-      s(aspot.query.trail('."as_a"').compile(inst.variable()).instruction),
+      s(aspot.query.trail('."as_a"').compile(inst.variable())),
       s(query.compile(inst.variable())), 
       "TrailExist should the the same as the trail"
     );
@@ -128,7 +123,7 @@ exports.query = {
     v0 = inst.variable();
     v1 = v0.next();
     result = {
-      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v0),
+      instruction : inst.lookup(v0, inst.lookupPart("=", "as_a"), v1),
       variable : v1
     };
     test.equal(s(result), s(compile), "Testing Compile of getObjectFromEqualPredicateCompile");
@@ -138,11 +133,11 @@ exports.query = {
     test.equal(typeof aspot.query.trail,'function', "Should have query.trailNode function");
 
     attr_trail = aspot.query.trail('."as_a"');
-    test.equal(attr_trail.item.predicate, "as_a");
+    test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."as_a"')), "I trail should parse and add a query for the last Trail Item to item");
 
     attr_trail = aspot.query.trail('."friend_of"."as_a"');
-    test.equal(attr_trail.item.predicate, "as_a", "trail should past the last item off to a getObjectFromEqualPredicate");
-    test.equal(attr_trail.trail.item.predicate, "friend_of", "trail should past the not last item off to a new trail ");
+    test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."friend_of"')), "I trail should parse and add a query for the last Trail Item to item");
+    test.equal(s(attr_trail.trail), s(aspot.query.trail('."as_a"')), "I trail should parse and add a query for the rest of the query  to trail");
     test.throws(function () {
       attr_trail = aspot.query.trail('bob');
     }, " query.trail should throw if the query is not parse able");
@@ -165,11 +160,11 @@ exports.query = {
 
     trail = aspot.query.trail('."is_a_friend_of"."as_a"');
     v0 = inst.variable();
-    rhs = aspot.query.getObjectFromEqualPredicate('."as_a"').compile(v0);
-    lhs = aspot.query.getObjectFromEqualPredicate('."is_a_friend_of"').compile(rhs.variable);
+    lhs = aspot.query.getObjectFromEqualPredicate('."is_a_friend_of"').compile(v0);
+    rhs = aspot.query.getObjectFromEqualPredicate('."as_a"').compile(lhs.variable);
     result = {
       instruction: inst.intersect(lhs.instruction, rhs.instruction),
-      variable: lhs.variable
+      variable: rhs.variable
     }
 
     test.equal(
@@ -183,8 +178,7 @@ exports.query = {
     test.equal(typeof aspot.query.trailExists,'function', "Should have query.trailexists function");
 
     attr_trail = aspot.query.trailExists('."friend_of"."as_a" EXISTS');
-    test.equal(attr_trail.trail.item.predicate, "as_a", "trailExists should past the trail on to trail");
-    test.equal(attr_trail.trail.trail.item.predicate, "friend_of", "trailExists should pass the trail on to trail");
+    test.equal(s(attr_trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailExists should have a trail property = the query of the trail");
     test.throws(function () {
       attr_trail = aspot.query.trailExists('."as_a"');
     }, " query.trailExists should throw if the query is not parseable");
@@ -204,8 +198,7 @@ exports.query = {
   whereCreation : function (test) {
     test.equal(typeof aspot.query.where,'function', "Should have query.where function");
     attr_trail = aspot.query.where('."friend_of"."as_a" EXISTS');
-    test.equal(attr_trail.item.trail.item.predicate, "as_a", "trailExists should past the trail on to trail");
-    test.equal(attr_trail.item.trail.trail.item.predicate, "friend_of", "trailExists should pass the trail on to trail");
+    test.equal(s(attr_trail.item), s(aspot.query.trailExists('."friend_of"."as_a" EXISTS')), "where should have an item property = the query of the where clause");
     /*
     test.throws(function () {
       attr_trail = aspot.query.trailExists('."as_a"');
@@ -234,7 +227,31 @@ exports.DB = {
     test.done();
   },
 
+  query : function(test) {
+    db = aspot.DB();
+    test.equals(typeof db.query, 'function', "DB should have query method");
+    datums = db.query('."is_a"');
+    test.equal(
+      s(aspot.query('."is_a"').compile()),
+      s(db.lastRequest),
+      "db.query should pass the query string to a query object compile it and then pass the result to retrieve")
+
+    test.done();
+  },
   retrieve : function(test) {
+    db = aspot.DB();
+    test.equals(typeof db.retrieve, 'function', "DB should have retrieve method");
+    var result = db.retrieve({instruction:"joe", variable:"sam"});
+    test.equals(
+      s(db.lastRequest),
+      s({instruction:"joe", variable:"sam"}),
+      "db.retrieve should store the last request. Note that other db types will override this method"
+    );
+    test.equals(
+      s(result),
+      s([]),
+      "db.retrieve returns [] Note that other db types will override this"
+    );
     test.done();
   }
 }
@@ -273,22 +290,26 @@ exports.triplet = {
   
   }
 }
-exports.localTestDB = {
+exports.localDB = {
   exists : function (test) {
-    test.equals(typeof aspot.localTestDB, 'function', "localTestDB should exist");
+    test.equals(typeof aspot.localDB, 'function', "localDB should exist");
+    var db = aspot.localDB();
+    test.equals(typeof db.query, 'function', "localDB should have query method");
+    test.equals(typeof db.retrieve, 'function', "localDB should have retrieve method");
+
     test.done();
   },
   store : function (test) {
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     test.ok(db.store instanceof Object, "Store should be an Array");
     
     trip = {subject:'bob', predicate:'is_a', object : 'human'};
     test.equal(typeof db.insert,'function', "locakTestDB should have insert method");
     db.insert(trip);
     trip = aspot.triplet(trip);
-    test.equals(db.store[trip.hash], trip, "localTestDB insert should add to store array");
+    test.equals(db.store[trip.hash], trip, "localDB insert should add to store array");
     helper.testTripletMutability(test,"", db.store[trip.hash]);  //store trip should not mutable
-    test.equal(typeof db.remove,'function', "localTestDB should have remove method");
+    test.equal(typeof db.remove,'function', "localDB should have remove method");
     db.remove(trip);
     test.equal(typeof db.store[trip.hash], 'undefined');
     trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
@@ -300,9 +321,9 @@ exports.localTestDB = {
     db.insert(trip3);
     db.insert(trip4);
     trip1 = aspot.triplet(trip1);
-    test.equal(typeof db.load,'function', "localTestDB should have load method");
+    test.equal(typeof db.load,'function', "localDB should have load method");
     trips = db.load({subject:'bob'});
-    test.equal(toString.call(trips), "[object Array]", "localTestDB.load should return array");
+    test.equal(toString.call(trips), "[object Array]", "localDB.load should return array");
     test.equal(trip1.hash, trips[0].hash, "loadTestDb.load should find all items where the subject is matched.");
     test.equal(typeof trips[1], 'undefined' , "loadTestDb.load should find only items where the subject is matched.");
 
@@ -322,7 +343,7 @@ exports.localTestDB = {
     test.done();
   },
   datum : function (test) {
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
     trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
     trip3 = {subject:'jake', predicate:'owner_of', object : 'joe'};
@@ -332,22 +353,66 @@ exports.localTestDB = {
     db.insert(trip3);
     db.insert(trip4);
 
-    test.equal(typeof db.load,'function', "localTestDB should have datum method");
+    test.equal(typeof db.load,'function', "localDB should have datum method");
     test.equals(typeof aspot.datum, 'function', "datum should exist");
     datum = db.datum("bob");
     test.equals(datum.value, "bob", "db.datum should create a datum using export.datum");
     test.done();
+  },
+  lookupTable : function(test) {
+    test.ok(typeof aspot.localDB.lookupTable === 'function', "localDB.lookupTableshould exist");
     
+    table = aspot.localDB.lookupTable();
+    test.equal(s(table.table), s([]), "when lookupTable is inited it should have an empty array for table");
+
+    test.ok(typeof table.add === 'function', "localDB.lookupTable should have add method");
+    var row = ['bob', 'joe', null, 'jane']
+    table.add(row);
+    test.equal(s(table.table), s([row]), "add should pass the array into the table array");
+    var row2 = ['bob', 'joe', 'jane']
+    table.add(row2);
+    test.equal(s(table.table), s([row, row2]), "add rows should be pushed to the end");
+
+
+    test.done();
+  },
+  retrieve : function(test) {
+    var request = aspot.query('."is_a"').compile();
+    var db = aspot.localDB();
+    trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
+    trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
+    trip3 = {subject:'human', predicate:'type_of', object : 'mammal'};
+    trip4 = {subject:'dog', predicate:'type_of', object : 'mammal'};
+    db.insert(trip1);
+    db.insert(trip2);
+    db.insert(trip3);
+    db.insert(trip4);
+    var result = aspot.localDB.lookupTable();
+    result.add(['bob', 'human']);
+    result.add(['joe', 'dog']);
+    test.equal(
+      s(db.requestLOOKUP(request.instruction)),
+      s(result),
+      "The LOOKUP method should return a lookupTable, matching the lookup instruction"
+    );
+    
+    test.equal(
+      s(db.retrieve(request)),
+      s([db.datum('human'), db.datum('dog')]),
+      "retrieve should return datums based on the value of the active variable col"
+    );
+  
+    test.done();
   }
+
 
 }
 exports.datums = {
   Contruct : function (test) {
-
     trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
     trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
     trip3 = {subject:'joe', predicate:'is_a_pet_of', object : 'bob'};
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     db.insert(trip1);
     db.insert(trip2);
     db.insert(trip3);
@@ -359,11 +424,10 @@ exports.datums = {
     test.done();
   },
   Value : function (test) {
-
     trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
     trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
     trip3 = {subject:'joe', predicate:'is_a_pet_of', object : 'bob'};
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     db.insert(trip1);
     db.insert(trip2);
     db.insert(trip3);
@@ -382,7 +446,7 @@ exports.datums = {
     trip2 = {subject:'jane', predicate:'is_a', object : 'cat'};
     trip3 = {subject:'joe', predicate:'is_a', object : 'dog'};
     trip4 = {subject:'joe', predicate:'is_a_pet_of', object : 'bob'};
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     db.insert(trip1);
     db.insert(trip2);
     db.insert(trip3);
@@ -425,7 +489,7 @@ exports.datums = {
     trip2 = {subject:'jane', predicate:'is_a', object : 'cat'};
     trip3 = {subject:'joe', predicate:'is_a', object : 'dog'};
     trip4 = {subject:'joe', predicate:'is_a_pet_of', object : 'bob'};
-    db = new aspot.localTestDB();
+    db = new aspot.localDB();
     datum = new db.datum('joe');
     datum_return = datum.set("is_a", "dog").set("is_a_pet_of", "bob");
     
