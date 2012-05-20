@@ -425,7 +425,6 @@ exports.localDB = {
       "retrieve should return datums based on the value of the active variable col intersect"
     );
 
-    console.log(db.query('[."friend_of" EXISTS]."is_a"').map(function(d) {return d()}));
     test.done();
   }
 
@@ -504,6 +503,13 @@ exports.datums = {
 
     test.equal(datum.attr("is_a_pet_of")[0].attr("is_a")[0](), "cat", "Attr should also allow a continuation to that items attributes");
     test.equal(datum.attr("is_a_pet_of").attr("is_a")[0](), "cat", "If Attr is not access as an array then .attr should access the attr function of the first item");
+    a = datum.attr("is_a_lover_of")[0]
+    a.value = 'godwin';
+    a.attr("believes in")[0].value = 'god';
+    trip4_new = aspot.triplet({subject:'godwin', predicate:'believes in', object : 'god'});
+    trips_4 = db.load({predicate: "believes in"});
+    test.equal(trip4_new.hash, trips_4[0].hash, "Adding a attr of an attr should add that triplet to the store");
+
 
     test.done();
   },
