@@ -44,6 +44,8 @@ s = function (obj) {
 }
 exports.uuid = function (test) {
   helper.testUUID(aspot.uuid, test);
+  test.ok(aspot.isUUID(aspot.uuid()), "A uuid passed to isUUID should return true");
+  test.ok(!aspot.isUUID("bob"), "A non uuid passed to isUUID should return false");
   test.done();
 };
 exports.queryInstruction = {
