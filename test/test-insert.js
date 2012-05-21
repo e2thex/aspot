@@ -196,10 +196,40 @@ exports.query = {
     );
     test.done();
   },
+  trailCompareCreation : function (test) {
+    test.equal(typeof aspot.query.trailCompare,'function', "Should have query.trailCompare function");
+    var attr_trail = aspot.query.trailCompare('."friend_of"."as_a" = "Joe"');
+    test.equal(s(attr_trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailComapare should have a trail property = the query of the trail");
+    test.equal(attr_trail.operator, "=", "trailComapare should have a operator property matching the operator in the query");
+    test.equal(attr_trail.value, "Joe", "trailComapare should have a value property matching the value in the query");
+    test.done();
+  },
+  trailCompareCompile : function (test) {
+    var inst = aspot.query.instruction;
+    trail = aspot.query.trailCompare('."as_a" = "Joe"');
+    test.equal(typeof trail.compile,'function', "trailCompare should have compile method");
+    v0 = aspot.query.instruction.variable();
+    lhs = aspot.query.trail('."as_a"').compile(v0);
+    v1 = lhs.variable.next();
+    v2 = lhs.variable.next();
+    rhs = aspot.query.instruction.lookup(
+      v1,
+      v2,
+      aspot.query.instruction.lookupPart("=", "Joe", lhs.variable)
+    );
+    var result = {
+      instruction : aspot.query.instruction.intersect(lhs.instruction, rhs),
+      variable: v1
+    }
+    test.equal(s(result), s(trail.compile(aspot.query.instruction.variable())), "Compile should deliver a intersect withe the rhs describing the lookup");
+    test.done();
+  },
   whereCreation : function (test) {
     test.equal(typeof aspot.query.where,'function', "Should have query.where function");
     attr_trail = aspot.query.where('."friend_of"."as_a" EXISTS');
     test.equal(s(attr_trail.item), s(aspot.query.trailExists('."friend_of"."as_a" EXISTS')), "where should have an item property = the query of the where clause");
+    attr_trail = aspot.query.where('."friend_of"."as_a" = "Joe"');
+    test.equal(s(attr_trail.item), s(aspot.query.trailCompare('."friend_of"."as_a" = "Joe"')), "where should have an item property = the query of where clause, and wotk whith trailCompare");
     /*
     test.throws(function () {
       attr_trail = aspot.query.trailExists('."as_a"');
