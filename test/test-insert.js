@@ -92,7 +92,7 @@ exports.query = {
   queryCreation: function (test) {
     test.equal(typeof aspot.query, 'function', "Should have query function");
     query = aspot.query('."as_a"');
-    test.equal(query.trail.item.predicate, "as_a");
+    test.equal(query.trail.item.value, "as_a");
 
     test.done();  
   },
@@ -117,6 +117,38 @@ exports.query = {
     }, " query.getObjectFromEqualPredicate show throw if the query is not parse able");
     test.done();
   },
+  getFromPredicateValueCreation : function (test) {
+    test.equal(typeof aspot.token.getFromPredicateValue,'function', "Should have query.getFromPredicate function");
+    trail = aspot.token.getFromPredicateValue("as_a", "right");
+    test.equal(trail.value, "as_a", "getFromPredicate should pulling the first param as a value");
+    test.equal(trail.direction, "right", "getFromPredicate should pulling the second parm as direction");
+    test.done();
+  },
+
+  getFromPredicateValueCompile : function (test) {
+    var inst = aspot.query.instruction;
+    var trail = aspot.token.getFromPredicateValue("as_a", "right");
+    test.equal(typeof trail.compile,'function', "token.getFromPredicateValue should have compile method");
+    var v0 = inst.variable();
+    var v1 = v0.next();
+    var compile = trail.compile(inst.variable());
+    result = {
+      instruction : inst.lookup(v0, inst.lookupPart("=", "as_a"), v1),
+      variable : v1
+    };
+    test.equal(s(result), s(compile), "getFromPredicate should compile with v1 lookup v2 if direction is right");
+
+    var trail = aspot.token.getFromPredicateValue("as_a", "left");
+    var compile = trail.compile(inst.variable());
+    result = {
+      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v0),
+      variable : v1
+    };
+    test.equal(s(result), s(compile), "getFromPredicate should compile with v2 lookup v1 if direction is left");
+    test.done();
+   
+  },
+
   getObjectFromEqualPredicateCompile : function (test) {
     var inst = aspot.query.instruction;
     trail = aspot.query.getObjectFromEqualPredicate('."as_a"');
@@ -160,23 +192,25 @@ exports.query = {
   trailCreation : function (test) {
     test.equal(typeof aspot.query.trail,'function', "Should have query.trailNode function");
 
-    var attr_trail = aspot.query.trail('."as_a"');
-    test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."as_a"')), "I trail should parse and add a query for the last Trail Item to item");
+    var trail = aspot.query.trail('."as_a"');
+    test.equal(s(trail.item), s(aspot.token.getFromPredicateValue("as_a", 'right')), "Should find .\"as_a\", Parse it, pass it to getFromPredicateValue and store in item");
 
-    var attr_trail = aspot.query.trail('.<"as_a"');
-    test.equal(s(attr_trail.item), s(aspot.query.getSubjectFromEqualPredicate('.<"as_a"')), "I trail should parse and add a query for the last Trail Item to item when it is a SubjectFromEqualPredicate");
+    var trail = aspot.query.trail('.>"as_a"');
+    test.equal(s(trail.item), s(aspot.token.getFromPredicateValue("as_a", 'right')), "Should find .>\"as_a\", Parse it, pass it to getFromPredicateValue and store in item");
 
-    var attr_trail = aspot.query.trail('."friend_of"."as_a"');
-    test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."friend_of"')), "I trail should parse and add a query for the last Trail Item to item");
-    test.equal(s(attr_trail.trail), s(aspot.query.trail('."as_a"')), "I trail should parse and add a query for the rest of the query  to trail");
+    var trail = aspot.query.trail('.<"as_a"');
+    test.equal(s(trail.item), s(aspot.token.getFromPredicateValue("as_a", 'left')), "Should find \.<\"as_a\", Parse it, pass it to getFromPredicateValue and store in item");
 
+    var trail = aspot.query.trail('."friend_of"."as_a"');
+    test.equal(s(trail.item), s(aspot.token.getFromPredicateValue("friend_of", 'right')), "trail should parse and add a query for the first trail item");
+    test.equal(s(trail.trail), s(aspot.query.trail('."as_a"')), "trail should parse and add a query for the rest of the query to trail");
 
     test.throws(function () {
       attr_trail = aspot.query.trail('bob');
     }, " query.trail should throw if the query is not parse able");
 
-    attr_trail = aspot.query.trail('[."as_a" EXISTS]');
-    test.equal(attr_trail.item.item.trail.item.predicate, "as_a","trail should return a where for its item");
+    var trail = aspot.query.trail('[."as_a" EXISTS]');
+    test.equal(s(trail.item), s(aspot.query.where('."as_a" EXISTS')), "Should find [], Parse it, pass it to where and store in item");
 
     test.done();
   },
@@ -208,18 +242,15 @@ exports.query = {
     test.done();
   },
   trailExistsCreation : function (test) {
-    test.equal(typeof aspot.query.trailExists,'function', "Should have query.trailexists function");
+    test.equal(typeof aspot.token.trailExists,'function', "Should have query.trailexists function");
 
-    attr_trail = aspot.query.trailExists('."friend_of"."as_a" EXISTS');
-    test.equal(s(attr_trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailExists should have a trail property = the query of the trail");
-    test.throws(function () {
-      attr_trail = aspot.query.trailExists('."as_a"');
-    }, " query.trailExists should throw if the query is not parseable");
+    attr_trail = aspot.token.trailExists(aspot.query.trail('."friend_of"."as_a"'));
+    test.equal(s(attr_trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailExists should save param 1 to trail");
     test.done();
   },
   trailExistsCompile : function(test) {
     var inst = aspot.query.instruction;
-    trail = aspot.query.trailExists('."as_a" EXISTS');
+    trail = aspot.token.trailExists(aspot.query.trail('."as_a"'));
     test.equal(typeof trail.compile,'function', "trailExists should have compile method");
     test.equal(
       s(aspot.query.trail('."as_a"').compile(inst.variable())),
@@ -229,16 +260,16 @@ exports.query = {
     test.done();
   },
   trailCompareCreation : function (test) {
-    test.equal(typeof aspot.query.trailCompare,'function', "Should have query.trailCompare function");
-    var attr_trail = aspot.query.trailCompare('."friend_of"."as_a" = "Joe"');
-    test.equal(s(attr_trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailComapare should have a trail property = the query of the trail");
-    test.equal(attr_trail.operator, "=", "trailComapare should have a operator property matching the operator in the query");
-    test.equal(attr_trail.value, "Joe", "trailComapare should have a value property matching the value in the query");
+    test.equal(typeof aspot.token.trailCompare,'function', "Should have token.trailCompare function");
+    var trail = aspot.token.trailCompare(aspot.query.trail('."friend_of"."as_a"'), '=', "Joe");
+    test.equal(s(trail.trail), s(aspot.query.trail('."friend_of"."as_a"')), "trailComapare should save param 1 as trail");
+    test.equal(trail.operator, "=", "trailComapare should save param 2 as operator");
+    test.equal(trail.value, "Joe", "trailComapare should save param 3 as value");
     test.done();
   },
   trailCompareCompile : function (test) {
     var inst = aspot.query.instruction;
-    trail = aspot.query.trailCompare('."as_a" = "Joe"');
+    var trail = aspot.token.trailCompare(aspot.query.trail('."as_a"'), '=', "Joe");
     test.equal(typeof trail.compile,'function', "trailCompare should have compile method");
     v0 = aspot.query.instruction.variable();
     lhs = aspot.query.trail('."as_a"').compile(v0);
@@ -258,14 +289,14 @@ exports.query = {
   },
   whereCreation : function (test) {
     test.equal(typeof aspot.query.where,'function', "Should have query.where function");
-    attr_trail = aspot.query.where('."friend_of"."as_a" EXISTS');
-    test.equal(s(attr_trail.item), s(aspot.query.trailExists('."friend_of"."as_a" EXISTS')), "where should have an item property = the query of the where clause");
-    attr_trail = aspot.query.where('."friend_of"."as_a" = "Joe"');
-    test.equal(s(attr_trail.item), s(aspot.query.trailCompare('."friend_of"."as_a" = "Joe"')), "where should have an item property = the query of where clause, and wotk whith trailCompare");
+    var trail = aspot.query.where('."friend_of"."as_a" EXISTS');
+    test.equal(s(trail.item), s(aspot.token.trailExists(aspot.query.trail('."friend_of"."as_a"'))), "where should have an item property = the query of the where clause");
+    var trail = aspot.query.where('."friend_of"."as_a" = "Joe"');
+    test.equal(s(trail.item), s(aspot.token.trailCompare(aspot.query.trail('."friend_of"."as_a"'), '=',"Joe")), "where should have an item property = the query of where clause, and wotk whith trailCompare");
     /*
     test.throws(function () {
-      attr_trail = aspot.query.trailExists('."as_a"');
-    }, " query.trailExists should throw if the query is not parseable");
+      attr_trail = aspot.token.trailExists('."as_a"');
+    }, " token.trailExists should throw if the query is not parseable");
     */
     test.done();
   },
