@@ -50,27 +50,27 @@ exports.uuid = function (test) {
 };
 exports.queryInstruction = {
   lookupCreation: function(test) {
-    test.equal(typeof aspot.query.instruction.lookup, 'function', "Should have instuction.lookup function");
-    v0 = aspot.query.instruction.variable();
+    test.equal(typeof aspot.instruction.lookup, 'function', "Should have instuction.lookup function");
+    v0 = aspot.instruction.variable();
     v1 = v0.next();
     v2 = v0.next();
-    inst = aspot.query.instruction.lookup(v0, v1, v2);
-    test.equal(s(inst.subject), s(v0), " aspot.query.instruction.lookup should return object with matching property subject");
-    test.equal(s(inst.predicate), s(v1), " aspot.query.instruction.lookup should return object with matching property predicate");
-    test.equal(s(inst.object), s(v2), " aspot.query.instruction.lookup should return object with matching property object");
-    test.equal(inst.type, "LOOKUP", " aspot.query.instruction.lookup should return an object with type LOOKUP");
+    inst = aspot.instruction.lookup(v0, v1, v2);
+    test.equal(s(inst.subject), s(v0), " aspot.instruction.lookup should return object with matching property subject");
+    test.equal(s(inst.predicate), s(v1), " aspot.instruction.lookup should return object with matching property predicate");
+    test.equal(s(inst.object), s(v2), " aspot.instruction.lookup should return object with matching property object");
+    test.equal(inst.type, "LOOKUP", " aspot.instruction.lookup should return an object with type LOOKUP");
     test.done();
   },
   intersectCreation: function(test) {
-    test.equal(typeof aspot.query.instruction.intersect, 'function', "Should have instuction.intersect function");
-    inst = aspot.query.instruction.intersect("bob", "joe");
-    test.equal(inst.lhs, "bob", " aspot.query.instruction.intersect should return an object with the lhs passed in");
-    test.equal(inst.rhs, "joe", " aspot.query.instruction.intersect should return an object with the rhs passed in");
-    test.equal(inst.type, "INTERSECT", " aspot.query.instruction should return an object with type LOOKUP");
+    test.equal(typeof aspot.instruction.intersect, 'function', "Should have instuction.intersect function");
+    inst = aspot.instruction.intersect("bob", "joe");
+    test.equal(inst.lhs, "bob", " aspot.instruction.intersect should return an object with the lhs passed in");
+    test.equal(inst.rhs, "joe", " aspot.instruction.intersect should return an object with the rhs passed in");
+    test.equal(inst.type, "INTERSECT", " aspot.instruction should return an object with type LOOKUP");
     test.done();
   },
   lookupPartCreation: function(test) {
-    var lookupPart = aspot.query.instruction.lookupPart;
+    var lookupPart = aspot.instruction.lookupPart;
     test.equal(typeof lookupPart,'function', "should have lookupPart function");
     l = lookupPart("=", "bob");
     test.equal(l.operator,"=", "lookupPart should return object with matching operator property")
@@ -78,7 +78,7 @@ exports.queryInstruction = {
     test.done();
   },
   variable : function(test) {
-    var variable = aspot.query.instruction.variable;
+    var variable = aspot.instruction.variable;
     test.equal(typeof variable,'function', "DB should have variable function");
     v = variable();
     test.equal(v.final, true, "A db.variable that is not named should be the final one");
@@ -97,7 +97,7 @@ exports.query = {
     test.done();  
   },
   queryCompile: function(test) {
-    var inst = aspot.query.instruction;
+    var inst = aspot.instruction;
     query = aspot.query('."as_a"');
     test.equal(typeof query.compile,'function', "query should have compile method");
     test.equal(
@@ -108,89 +108,20 @@ exports.query = {
 
     test.done();
   },
-  getObjectFromEqualPredicateCreation : function (test) {
-    test.equal(typeof aspot.query.getObjectFromEqualPredicate,'function', "Should have query.getObjectFromEqualPredicate function");
-    attr_trail = aspot.query.getObjectFromEqualPredicate('."as_a"');
-    test.equal(attr_trail.predicate, "as_a");
+  whereCreation : function (test) {
+    test.equal(typeof aspot.query.where,'function', "Should have query.where function");
+    var trail = aspot.query.where('."friend_of"."as_a" EXISTS');
+    test.equal(s(trail.clause), s(aspot.token.trailExists(aspot.query.trail('."friend_of"."as_a"'))), "where should have an item property = the query of the where clause");
+    var trail = aspot.query.where('."friend_of"."as_a" = "Joe"');
+    test.equal(s(trail.clause), s(aspot.token.trailCompare(aspot.query.trail('."friend_of"."as_a"'), '=',"Joe")), "where should have an item property = the query of where clause, and wotk whith trailCompare");
+    /*
     test.throws(function () {
-      attr_trail = aspot.query.getObjectFromEqualPredicate('"as_a"');
-    }, " query.getObjectFromEqualPredicate show throw if the query is not parse able");
-    test.done();
-  },
-  getFromPredicateValueCreation : function (test) {
-    test.equal(typeof aspot.token.getFromPredicateValue,'function', "Should have query.getFromPredicate function");
-    trail = aspot.token.getFromPredicateValue("as_a", "right");
-    test.equal(trail.value, "as_a", "getFromPredicate should pulling the first param as a value");
-    test.equal(trail.direction, "right", "getFromPredicate should pulling the second parm as direction");
-    test.done();
-  },
-
-  getFromPredicateValueCompile : function (test) {
-    var inst = aspot.query.instruction;
-    var trail = aspot.token.getFromPredicateValue("as_a", "right");
-    test.equal(typeof trail.compile,'function', "token.getFromPredicateValue should have compile method");
-    var v0 = inst.variable();
-    var v1 = v0.next();
-    var compile = trail.compile(inst.variable());
-    result = {
-      instruction : inst.lookup(v0, inst.lookupPart("=", "as_a"), v1),
-      variable : v1
-    };
-    test.equal(s(result), s(compile), "getFromPredicate should compile with v1 lookup v2 if direction is right");
-
-    var trail = aspot.token.getFromPredicateValue("as_a", "left");
-    var compile = trail.compile(inst.variable());
-    result = {
-      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v0),
-      variable : v1
-    };
-    test.equal(s(result), s(compile), "getFromPredicate should compile with v2 lookup v1 if direction is left");
-    test.done();
-   
-  },
-
-  getObjectFromEqualPredicateCompile : function (test) {
-    var inst = aspot.query.instruction;
-    trail = aspot.query.getObjectFromEqualPredicate('."as_a"');
-    test.equal(typeof trail.compile,'function', "query.getObjectFromEqualPredicate should have compile method");
-    v0 = inst.variable();
-    v1 = v0.next();
-    v2 = v0.next();
-    compile = trail.compile(inst.variable().next());
-    result = {
-      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v2),
-      variable : v2
-    };
-    test.equal(s(result), s(compile), "Testing Compile of getObjectFromEqualPredicateCompile");
-    test.done();
-  },
-  getSubjectFromEqualPredicateCreation : function (test) {
-    test.equal(typeof aspot.query.getSubjectFromEqualPredicate,'function', "Should have query.getSubjectFromEqualPredicate function");
-    attr_trail = aspot.query.getSubjectFromEqualPredicate('.<"as_a"');
-    test.equal(attr_trail.predicate, "as_a");
-    test.throws(function () {
-      attr_trail = aspot.query.getSubjectFromEqualPredicate('"as_a"');
-    }, " query.getSubjectFromEqualPredicate show throw if the query is not parse able");
-    test.done();
-  },
-
-  getSubjectFromEqualPredicateCompile : function (test) {
-    var inst = aspot.query.instruction;
-    trail = aspot.query.getSubjectFromEqualPredicate('.<"as_a"');
-    test.equal(typeof trail.compile,'function', "query.getSubjectFromEqualPredicate should have compile method");
-    v0 = inst.variable();
-    v1 = v0.next();
-    v2 = v0.next();
-    compile = trail.compile(inst.variable().next());
-    result = {
-      instruction : inst.lookup(v2, inst.lookupPart("=", "as_a"), v1),
-      variable : v2
-    };
-    test.equal(s(result), s(compile), "Testing Compile of getSubjectFromEqualPredicateCompile");
+      attr_trail = aspot.token.trailExists('."as_a"');
+    }, " token.trailExists should throw if the query is not parseable");
+    */
     test.done();
   },
   trailCreation : function (test) {
-    test.equal(typeof aspot.query.trail,'function', "Should have query.trailNode function");
 
     var trail = aspot.query.trail('."as_a"');
     test.equal(s(trail.item), s(aspot.token.getFromPredicateValue("as_a", 'right')), "Should find .\"as_a\", Parse it, pass it to getFromPredicateValue and store in item");
@@ -213,22 +144,65 @@ exports.query = {
     test.equal(s(trail.item), s(aspot.query.where('."as_a" EXISTS')), "Should find [], Parse it, pass it to where and store in item");
 
     test.done();
+  }
+
+}
+exports.token = {
+  getFromPredicateValueCreation : function (test) {
+    test.equal(typeof aspot.token.getFromPredicateValue,'function', "Should have query.getFromPredicate function");
+    trail = aspot.token.getFromPredicateValue("as_a", "right");
+    test.equal(trail.value, "as_a", "getFromPredicate should pulling the first param as a value");
+    test.equal(trail.direction, "right", "getFromPredicate should pulling the second parm as direction");
+    test.done();
+  },
+  getFromPredicateValueCompile : function (test) {
+    var inst = aspot.instruction;
+    var trail = aspot.token.getFromPredicateValue("as_a", "right");
+    test.equal(typeof trail.compile,'function', "token.getFromPredicateValue should have compile method");
+    var v0 = inst.variable();
+    var v1 = v0.next();
+    var compile = trail.compile(inst.variable());
+    result = {
+      instruction : inst.lookup(v0, inst.lookupPart("=", "as_a"), v1),
+      variable : v1
+    };
+    test.equal(s(result), s(compile), "getFromPredicate should compile with v1 lookup v2 if direction is right");
+
+    var trail = aspot.token.getFromPredicateValue("as_a", "left");
+    var compile = trail.compile(inst.variable());
+    result = {
+      instruction : inst.lookup(v1, inst.lookupPart("=", "as_a"), v0),
+      variable : v1
+    };
+    test.equal(s(result), s(compile), "getFromPredicate should compile with v2 lookup v1 if direction is left");
+    test.done();
+  },
+  trailCreation : function (test) {
+ 
+    test.equal(typeof aspot.token.trail,'function', "Should have token.trail function");
+    var item = aspot.query.trail('."as_a"');
+    var tail = aspot.query.trail('."friend_of"');
+    var trail = aspot.token.trail(item, tail);
+    test.equal(s(trail.item), s(item), " Trail token should save param 1 in item");
+    test.equal(s(trail.item), s(tail), " Trail token should save param 2 in tail");
+    test.equal(typeof aspot.query.trail,'function', "Should have query.trailNode function");
+    test.done();
   },
   trailCompile : function (test) {
-    var inst = aspot.query.instruction;
+    var inst = aspot.instruction;
     trail = aspot.query.trail('."as_a"');
     test.equal(typeof trail.compile,'function', "trail should have compile method");
     v0 = inst.variable();
     test.equal(
-      s(aspot.query.getObjectFromEqualPredicate('."as_a"').compile(v0)), 
+      s(aspot.token.getFromPredicateValue("as_a", 'right').compile(v0)), 
       s(trail.compile(inst.variable())), 
       "Trail with just a Trail item should compile as if only that item"
     );
 
     trail = aspot.query.trail('."is_a_friend_of"."as_a"');
     v0 = inst.variable();
-    lhs = aspot.query.getObjectFromEqualPredicate('."is_a_friend_of"').compile(v0);
-    rhs = aspot.query.getObjectFromEqualPredicate('."as_a"').compile(lhs.variable);
+    lhs = aspot.token.getFromPredicateValue("is_a_friend_of", 'right').compile(v0);
+    rhs = aspot.token.getFromPredicateValue("as_a", 'right').compile(lhs.variable);
     result = {
       instruction: inst.intersect(lhs.instruction, rhs.instruction),
       variable: rhs.variable
@@ -249,7 +223,7 @@ exports.query = {
     test.done();
   },
   trailExistsCompile : function(test) {
-    var inst = aspot.query.instruction;
+    var inst = aspot.instruction;
     trail = aspot.token.trailExists(aspot.query.trail('."as_a"'));
     test.equal(typeof trail.compile,'function', "trailExists should have compile method");
     test.equal(
@@ -268,44 +242,31 @@ exports.query = {
     test.done();
   },
   trailCompareCompile : function (test) {
-    var inst = aspot.query.instruction;
+    var inst = aspot.instruction;
     var trail = aspot.token.trailCompare(aspot.query.trail('."as_a"'), '=', "Joe");
     test.equal(typeof trail.compile,'function', "trailCompare should have compile method");
-    v0 = aspot.query.instruction.variable();
+    v0 = aspot.instruction.variable();
     lhs = aspot.query.trail('."as_a"').compile(v0);
     v1 = lhs.variable.next();
     v2 = lhs.variable.next();
-    rhs = aspot.query.instruction.lookup(
+    rhs = aspot.instruction.lookup(
       v1,
       v2,
-      aspot.query.instruction.lookupPart("=", "Joe", lhs.variable)
+      aspot.instruction.lookupPart("=", "Joe", lhs.variable)
     );
     var result = {
-      instruction : aspot.query.instruction.intersect(lhs.instruction, rhs),
+      instruction : aspot.instruction.intersect(lhs.instruction, rhs),
       variable: v1
     }
-    test.equal(s(result), s(trail.compile(aspot.query.instruction.variable())), "Compile should deliver a intersect withe the rhs describing the lookup");
-    test.done();
-  },
-  whereCreation : function (test) {
-    test.equal(typeof aspot.query.where,'function', "Should have query.where function");
-    var trail = aspot.query.where('."friend_of"."as_a" EXISTS');
-    test.equal(s(trail.item), s(aspot.token.trailExists(aspot.query.trail('."friend_of"."as_a"'))), "where should have an item property = the query of the where clause");
-    var trail = aspot.query.where('."friend_of"."as_a" = "Joe"');
-    test.equal(s(trail.item), s(aspot.token.trailCompare(aspot.query.trail('."friend_of"."as_a"'), '=',"Joe")), "where should have an item property = the query of where clause, and wotk whith trailCompare");
-    /*
-    test.throws(function () {
-      attr_trail = aspot.token.trailExists('."as_a"');
-    }, " token.trailExists should throw if the query is not parseable");
-    */
+    test.equal(s(result), s(trail.compile(aspot.instruction.variable())), "Compile should deliver a intersect withe the rhs describing the lookup");
     test.done();
   },
   whereCompile : function(test) {
-    var inst = aspot.query.instruction;
+    var inst = aspot.instruction;
     trail = aspot.query.where('."as_a" EXISTS');
     test.equal(typeof trail.compile,'function', "where should have compile method");
     v0 = inst.variable();
-    result = aspot.query.getObjectFromEqualPredicate('."as_a"').compile(v0);
+    result = aspot.token.getFromPredicateValue("as_a", 'right').compile(v0);
     result.variable = v0;
     test.equal(
       s(result),
@@ -486,9 +447,9 @@ exports.localDB = {
         {subject:'mammal', predicate:'type_of', object : 'thing'}
       ]
     );
-    var v0 = aspot.query.instruction.variable();
+    var v0 = aspot.instruction.variable();
     var v1= v0.next();
-    var request = aspot.query.getObjectFromEqualPredicate('."is_a"').compile(v1);
+    var request = aspot.token.getFromPredicateValue("is_a", 'right').compile(v1);
     var result = aspot.localDB.lookupTable();
     result.add([null, 'bob', 'human']);
     result.add([null, 'joe', 'dog']);
