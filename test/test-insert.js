@@ -132,15 +132,45 @@ exports.query = {
     test.equal(s(result), s(compile), "Testing Compile of getObjectFromEqualPredicateCompile");
     test.done();
   },
+  getSubjectFromEqualPredicateCreation : function (test) {
+    test.equal(typeof aspot.query.getSubjectFromEqualPredicate,'function', "Should have query.getSubjectFromEqualPredicate function");
+    attr_trail = aspot.query.getSubjectFromEqualPredicate('.<"as_a"');
+    test.equal(attr_trail.predicate, "as_a");
+    test.throws(function () {
+      attr_trail = aspot.query.getSubjectFromEqualPredicate('"as_a"');
+    }, " query.getSubjectFromEqualPredicate show throw if the query is not parse able");
+    test.done();
+  },
+
+  getSubjectFromEqualPredicateCompile : function (test) {
+    var inst = aspot.query.instruction;
+    trail = aspot.query.getSubjectFromEqualPredicate('.<"as_a"');
+    test.equal(typeof trail.compile,'function', "query.getSubjectFromEqualPredicate should have compile method");
+    v0 = inst.variable();
+    v1 = v0.next();
+    v2 = v0.next();
+    compile = trail.compile(inst.variable().next());
+    result = {
+      instruction : inst.lookup(v2, inst.lookupPart("=", "as_a"), v1),
+      variable : v2
+    };
+    test.equal(s(result), s(compile), "Testing Compile of getSubjectFromEqualPredicateCompile");
+    test.done();
+  },
   trailCreation : function (test) {
     test.equal(typeof aspot.query.trail,'function', "Should have query.trailNode function");
 
-    attr_trail = aspot.query.trail('."as_a"');
+    var attr_trail = aspot.query.trail('."as_a"');
     test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."as_a"')), "I trail should parse and add a query for the last Trail Item to item");
 
-    attr_trail = aspot.query.trail('."friend_of"."as_a"');
+    var attr_trail = aspot.query.trail('.<"as_a"');
+    test.equal(s(attr_trail.item), s(aspot.query.getSubjectFromEqualPredicate('.<"as_a"')), "I trail should parse and add a query for the last Trail Item to item when it is a SubjectFromEqualPredicate");
+
+    var attr_trail = aspot.query.trail('."friend_of"."as_a"');
     test.equal(s(attr_trail.item), s(aspot.query.getObjectFromEqualPredicate('."friend_of"')), "I trail should parse and add a query for the last Trail Item to item");
     test.equal(s(attr_trail.trail), s(aspot.query.trail('."as_a"')), "I trail should parse and add a query for the rest of the query  to trail");
+
+
     test.throws(function () {
       attr_trail = aspot.query.trail('bob');
     }, " query.trail should throw if the query is not parse able");
@@ -545,6 +575,7 @@ exports.datums = {
 
     test.done();
   },
+
   Set : function (test) {
   /*
     trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
