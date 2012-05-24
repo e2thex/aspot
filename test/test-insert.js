@@ -151,7 +151,6 @@ exports.query = {
     test.equal(s(trail.item), s(aspot.token.getSelf()), "Should find VALUE Parse it, pass it to getSelf and store in item");
 
     test.done();
-    test.done();
   }
 
 }
@@ -195,7 +194,8 @@ exports.token = {
     test.equal(typeof gs.compile, 'function', "Stoken.getSelf should have compile method");
     var result = {
       instruction : aspot.instruction.lookup(v0, v0.next(), v0.next()),
-      variable : v0
+      variable : v0,
+      part : 'subject'
     };
     test.equal(
       s(gs.compile(aspot.instruction.variable())), 
@@ -281,7 +281,7 @@ exports.token = {
     );
     var result = {
       instruction : aspot.instruction.intersect(lhs.instruction, rhs),
-      variable: v1
+      variable: lhs.variable
     }
     test.equal(s(result), s(trail.compile(aspot.instruction.variable())), "Compile should deliver a intersect withe the rhs describing the lookup");
     test.done();
@@ -298,6 +298,12 @@ exports.token = {
       s(trail.compile(inst.variable())), 
       "where.compile should compile same as its item but not alter variable"
     );
+    var trail = aspot.query.where('VALUE = "as_a"');
+    c = trail.compile(inst.variable());
+    //console.log(aspot.token.getSelf().compile(inst.variable()));
+    //console.log(c);
+    //console.log(c.instruction.lhs);
+    //console.log(c.instruction.rhs);
     test.done();
   }
 
@@ -503,6 +509,20 @@ exports.localDB = {
       "retrieve should return datums based on the value of the active variable col intersect"
     );
 
+    test.done();
+  },
+  query : function(test) {
+
+    var db = aspot.localDB([
+      {subject:'jane', predicate:'is_a', object : 'cat'},
+      {subject:'joe', predicate:'is_a', object : 'dog'},
+      {subject:'bob', predicate:'is_a', object : 'human'},
+      {subject:'joe', predicate:'is_a_pet_of', object : 'jane'},
+      {subject:'joe', predicate:'is_a_pet_of', object : 'bob'},
+    ]);
+    q = '[VALUE = "joe"]."is_a_pet_of"';
+    var result = db.query(q).map(function(a) { return a.value});
+    c =aspot.query(q).compile();
     test.done();
   }
 
