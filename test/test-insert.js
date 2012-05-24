@@ -398,19 +398,17 @@ exports.localDB = {
     test.done();
   },
   datum : function (test) {
-    db = new aspot.localDB();
-    trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
-    trip2 = {subject:'joe', predicate:'is_a', object : 'dog'};
-    trip3 = {subject:'jake', predicate:'owner_of', object : 'joe'};
-    trip4 = {subject:'jake', predicate:'friend_of', object : 'bob'};
-    db.insert(trip1);
-    db.insert(trip2);
-    db.insert(trip3);
-    db.insert(trip4);
+    db = new aspot.localDB([
+      {subject:'bob', predicate:'is_a', object : 'human'},
+      {subject:'joe', predicate:'is_a', object : 'dog'},
+      {subject:'jake', predicate:'owner_of', object : 'joe'},
+      {subject:'jake', predicate:'friend_of', object : 'bob'},
+      {subject:'jake', predicate:'friend_of', object : 'joe'}
+    ]);
 
     test.equal(typeof db.load,'function', "localDB should have datum method");
     test.equals(typeof aspot.datum, 'function', "datum should exist");
-    datum = db.datum("bob");
+    var datum = db.datum("bob");
     test.equals(datum.value, "bob", "db.datum should create a datum using export.datum");
     test.done();
   },
@@ -519,18 +517,13 @@ exports.datums = {
   },
 
   Attr : function (test) {
-    trip1 = {subject:'bob', predicate:'is_a', object : 'human'};
-    trip2 = {subject:'jane', predicate:'is_a', object : 'cat'};
-    trip3 = {subject:'joe', predicate:'is_a', object : 'dog'};
-    trip4 = {subject:'joe', predicate:'is_a_pet_of', object : 'bob'};
-    db = new aspot.localDB();
-    db.insert(trip1);
-    db.insert(trip2);
-    db.insert(trip3);
-    db.insert(trip4);
-    datum = aspot.datum(db, "joe");
- 
-
+    var db = aspot.localDB([
+      {subject:'jane', predicate:'is_a', object : 'cat'},
+      {subject:'joe', predicate:'is_a', object : 'dog'},
+      {subject:'bob', predicate:'is_a', object : 'human'},
+      {subject:'joe', predicate:'is_a_pet_of', object : 'bob'},
+    ]);
+    var datum = aspot.datum(db, "joe");
 
     test.ok(typeof datum.attr == 'function', "datum should have attr function");
 
@@ -550,7 +543,8 @@ exports.datums = {
     trip3_new = aspot.triplet({subject:'joe', predicate:'is_a_pet_of', object : 'jane'});
     test.equal(trip3_new.hash, trips_a[0].hash, "Changing an attr value should change the trip of that attr");
     test.equal(typeof trips_a[1], 'undefined' , "Changing an attr value should change the trip of that attr and nothing else");
-    trips_b = db.load({subject:'bob'});
+    var trips_b = db.load({subject:'bob'});
+    var trip1 =  aspot.triplet({subject:'bob', predicate:'is_a', object : 'human'});
     test.equal(trip1.hash, trips_b[0].hash, "Changing an attr value should not effect the attr of the past object");
 
 
@@ -565,6 +559,20 @@ exports.datums = {
     test.equal(trip4_new.hash, trips_4[0].hash, "Adding a attr of an attr should add that triplet to the store");
 
 
+    test.done();
+  },
+  attrs : function (test) {
+    var db = aspot.localDB([
+      {subject:'jane', predicate:'is_a', object : 'cat'},
+      {subject:'joe', predicate:'is_a', object : 'dog'},
+      {subject:'bob', predicate:'is_a', object : 'human'},
+      {subject:'joe', predicate:'is_a_pet_of', object : 'bob'},
+      {subject:'joe', predicate:'is_a_pet_of', object : 'jane'},
+    ]);
+    var datum = aspot.datum(db, "joe");
+    test.ok(typeof datum.attrs == 'function', "datum should have atts method");
+
+    test.deepEqual(datum.attrs(), ['is_a', 'is_a_pet_of'], "datum.attrs() should return an array of all unique attrs");
     test.done();
   },
 
