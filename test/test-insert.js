@@ -72,19 +72,20 @@ exports.queryInstruction = {
   lookupPartCreation: function(test) {
     var lookupPart = aspot.instruction.lookupPart;
     test.equal(typeof lookupPart,'function', "should have lookupPart function");
-    l = lookupPart("=", "bob");
+    var l = lookupPart("=", "bob");
     test.equal(l.operator,"=", "lookupPart should return object with matching operator property")
     test.equal(l.value,"bob", "lookupPart should return object with matching value property")
+    var v = aspot.instruction.variable();
+    var l = lookupPart("=", "bob", v);
+    test.equal(l.name, v.name, "lookupPart should return extend version of variable")
     test.done();
   },
   variable : function(test) {
     var variable = aspot.instruction.variable;
     test.equal(typeof variable,'function', "DB should have variable function");
     v = variable();
-    test.equal(v.final, true, "A db.variable that is not named should be the final one");
-    v = v.next()
-    test.equal(v.name, "1", "A db.variable should have the name that was used to create it");
-    test.equal(v.final, false, "A db.variable that is named should not have final set");
+    test.equal(v.name, "0", "Vairable should return a variable with a name of 0");
+    test.equal(v.next().name, "1", "Vairable next methold should return a new ++ variable");
     test.done();
   },
 }
@@ -143,6 +144,13 @@ exports.query = {
     var trail = aspot.query.trail('[."as_a" EXISTS]');
     test.equal(s(trail.item), s(aspot.query.where('."as_a" EXISTS')), "Should find [], Parse it, pass it to where and store in item");
 
+    var trail = aspot.query.trail('SELF');
+    test.equal(s(trail.item), s(aspot.token.getSelf()), "Sould find SELF Parse it, pass it to getSelf and store in item");
+
+    var trail = aspot.query.trail('VALUE');
+    test.equal(s(trail.item), s(aspot.token.getSelf()), "Should find VALUE Parse it, pass it to getSelf and store in item");
+
+    test.done();
     test.done();
   }
 
@@ -177,8 +185,25 @@ exports.token = {
     test.equal(s(result), s(compile), "getFromPredicate should compile with v2 lookup v1 if direction is left");
     test.done();
   },
+  getSelfCreation :function(test) {
+    test.equal(typeof aspot.token.getSelf, 'function', "Should have token.getSelf function");
+    test.done();
+  },
+  getSelfCompile :function(test) {
+    var v0 = aspot.instruction.variable();
+    var gs = aspot.token.getSelf();
+    test.equal(typeof gs.compile, 'function', "Stoken.getSelf should have compile method");
+    var result = {
+      instruction : aspot.instruction.lookup(v0, v0.next(), v0.next()),
+      variable : v0
+    };
+    test.equal(
+      s(gs.compile(aspot.instruction.variable())), 
+      s(result), 
+      "token.getSelf should compile to a lookup with 3 variable, the first of which is return as the active variable");
+    test.done();
+  },
   trailCreation : function (test) {
- 
     test.equal(typeof aspot.token.trail,'function', "Should have token.trail function");
     var item = aspot.query.trail('."as_a"');
     var tail = aspot.query.trail('."friend_of"');
@@ -275,6 +300,7 @@ exports.token = {
     );
     test.done();
   }
+
 }
 exports.DB = {
   DBExists : function (test) {
