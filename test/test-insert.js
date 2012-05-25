@@ -569,10 +569,12 @@ exports.datums = {
       {subject:'bob', predicate:'is_a', object : 'human'},
       {subject:'joe', predicate:'is_a_pet_of', object : 'bob'},
     ]);
-    var datum = aspot.datum(db, "joe");
-
+    var datum = aspot.datum(db, "bob");
     test.ok(typeof datum.attr == 'function', "datum should have attr function");
 
+    test.equal(datum.attr("is_a_pet_of", 'left')[0](), 'joe', "Getting an Attr should return a array of branch that when call will return the value of the branch when pass left attr branch go from right to left");
+
+    var datum = aspot.datum(db, "joe");
     test.equal(toString.call(datum.attr("is_a")), "[object Array]", "datum.attr should return array");
     test.notEqual(typeof datum.attr("is_a")[0],'undefined', "datum.attr should always have at least one item");
     test.equal(datum.attr("is_a")[0](), 'dog', "Getting an Attr should return a array of branch that when call will return the value of the branch");
@@ -609,7 +611,7 @@ exports.datums = {
   },
   attrs : function (test) {
     var db = aspot.localDB([
-      {subject:'jane', predicate:'is_a', object : 'cat'},
+      {subject:'jane', predicate:'is_a', object : 'dog'},
       {subject:'joe', predicate:'is_a', object : 'dog'},
       {subject:'bob', predicate:'is_a', object : 'human'},
       {subject:'joe', predicate:'is_a_pet_of', object : 'bob'},
@@ -619,6 +621,10 @@ exports.datums = {
     test.ok(typeof datum.attrs == 'function', "datum should have atts method");
 
     test.deepEqual(datum.attrs(), ['is_a', 'is_a_pet_of'], "datum.attrs() should return an array of all unique attrs");
+    test.deepEqual(datum.attr("is_a_pet_of").attrs(), ['is_a'], "datumBranch.attrs() should return an array of all unique attrs");
+    test.deepEqual(datum.attr("is_a_pet_of").attrs('left'), ['is_a_pet_of'], "datumBranch.attrs() should return an array of all unique attrs");
+    var datum = aspot.datum(db, "dog");
+    test.deepEqual(datum.attrs('left'), ['is_a'], "datum.attrs() should return an array of all unique attrs in the left direction");
     test.done();
   },
 
