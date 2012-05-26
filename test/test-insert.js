@@ -300,12 +300,36 @@ exports.token = {
     );
     var trail = aspot.query.where('VALUE = "as_a"');
     c = trail.compile(inst.variable());
-    //console.log(aspot.token.getSelf().compile(inst.variable()));
-    //console.log(c);
-    //console.log(c.instruction.lhs);
-    //console.log(c.instruction.rhs);
     test.done();
-  }
+  },
+  whereClauseAndCreation : function (test) {
+    var leftClause = aspot.token.trailCompare(aspot.query.trail('."as_a"'), '=', "Joe");
+    var rightClause = aspot.token.trailCompare(aspot.query.trail('."friend_of"'), '=', "Jane");
+
+    test.equal(typeof aspot.token.whereClauseAnd,'function', "token should have a whereClauseAnd method");
+    test.equal(s(aspot.token.whereClauseAnd(leftClause, rightClause).lhs),s(leftClause), "whereClauseAdd should store param 1 as lhs");
+    test.equal(s(aspot.token.whereClauseAnd(leftClause, rightClause).rhs),s(rightClause), "whereClauseAdd should store param 2 as rhs");
+    test.done();
+  },
+  whereClauseAndCompile : function (test) {
+    var leftClause = aspot.token.trailCompare(aspot.query.trail('."as_a"'), '=', "Joe");
+    var rightClause = aspot.token.trailCompare(aspot.query.trail('."friend_of"'), '=', "Jane");
+    var clause = aspot.token.whereClauseAnd(leftClause, rightClause);
+    test.equal(typeof clause.compile,'function', "whereClauseAnd should have compile method");
+    var v0 = aspot.instruction.variable();
+    test.equal(
+      s(clause.compile(aspot.instruction.variable())),
+      s({
+        instruction : aspot.instruction.intersect(
+          leftClause.compile(v0).instruction,
+          rightClause.compile(v0).instruction),
+        variable: v0
+      }),
+      "whereClauseAnd compile should return a intersect instruction with its lhs and rhs.  the variable should be what was passed in");
+
+    test.done();
+  },
+
 
 }
 exports.DB = {
