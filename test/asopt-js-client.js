@@ -66,7 +66,15 @@ exports.queryInstruction = {
     inst = aspot.instruction.intersect("bob", "joe");
     test.equal(inst.lhs, "bob", " aspot.instruction.intersect should return an object with the lhs passed in");
     test.equal(inst.rhs, "joe", " aspot.instruction.intersect should return an object with the rhs passed in");
-    test.equal(inst.type, "INTERSECT", " aspot.instruction should return an object with type LOOKUP");
+    test.equal(inst.type, "INTERSECT", " aspot.instruction should return an object with type INTERSECT");
+    test.done();
+  },
+  unionCreation: function(test) {
+    test.equal(typeof aspot.instruction.union, 'function', "Should have instuction.union function");
+    inst = aspot.instruction.union("bob", "joe");
+    test.equal(inst.lhs, "bob", " aspot.instruction.union should return an object with the lhs passed in");
+    test.equal(inst.rhs, "joe", " aspot.instruction.union should return an object with the rhs passed in");
+    test.equal(inst.type, "UNION", " aspot.instruction should return an object with type UNION");
     test.done();
   },
   lookupPartCreation: function(test) {
