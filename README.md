@@ -48,5 +48,6 @@ zip = datum.attr("address").attr("zip");
 
 would return the zip of the address of the current datum.attr
 
-
+#Test Run
+you can take aspot for a test run by using the jsconsole.com site http://jsconsole.com/?%3Aload%20https%3A%2F%2Fraw.github.com%2Fe2thex%2Faspot%2Fmaster%2Flib%2Faspot.js
 
