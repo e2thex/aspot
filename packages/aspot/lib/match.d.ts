@@ -1,0 +1,23 @@
+import { Match, MatchContext, MatchWithMeta, Sentence, Term } from "./types";
+declare const defaultMatchContext: () => MatchContext;
+declare const isTrue: Match;
+declare const isFalse: Match;
+declare const not: (clause: Match) => Match;
+declare const and: (...clauses: Match[]) => MatchWithMeta;
+declare const or: (...clauses: Match[]) => MatchWithMeta;
+declare const is: (part: Term) => (v: string | RegExp) => MatchWithMeta;
+declare const join: (resultName: string) => (prev: Term) => (next: Term) => MatchWithMeta;
+declare const objectExists: (sentence: Sentence) => boolean;
+declare const subjectIs: (subject: string | RegExp) => Match;
+declare const predicateIs: (predicate: string | RegExp) => Match;
+declare const objectIs: (object: string | RegExp) => Match;
+declare const matchPartial: (search: Partial<Sentence>) => MatchWithMeta;
+declare type WhereObject = {
+    match: (part: Term) => Match;
+    matchPrev: (prevPart: Term) => Match;
+    matchWith: (search: string) => (prevPart: Term) => Match;
+};
+declare const basicWhere: (props: any) => (part: Term) => WhereObject;
+declare const where: (part: Term) => WhereObject;
+declare const joinPrev: (prev: Term) => (next: Term) => MatchWithMeta;
+export { isTrue, isFalse, not, and, or, is, subjectIs, predicateIs, objectIs, join, joinPrev, matchPartial, objectExists, defaultMatchContext, basicWhere, where, };

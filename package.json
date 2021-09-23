@@ -1,0 +1,19 @@
+{
+  "name": "root",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  },
+  "scripts": {
+    "tsc": "lerna run tsc"
+  },
+  "dependencies": {
+    "-": "0.0.1",
+    "@types/lodash": "^4.14.173",
+    "@types/node": "^16.9.4",
+    "lodash": "^4.17.21",
+    "save-dev": "0.0.1-security",
+    "typescript": "^4.4.3",
+    "uuid": "^8.3.2"
+  }
+}

@@ -1,0 +1,10 @@
+{
+ "extends": "../../tsconfig.json",
+ "compilerOptions": {
+   "outDir": "./lib",
+   "types": ["@types/jest"]
+ },
+ "include": [
+   "./src"
+ ]
+}

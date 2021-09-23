@@ -1,0 +1,182 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for find.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="index.html">All files</a> find.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">60.71% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>34/56</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">31.25% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>5/16</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">29.03% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>9/31</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">93.1% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>27/29</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.addSentencesToContext = exports.groupSentences = exports.baseFindSentences = exports.findSentences = void 0;
+const lodash_1 = require("lodash");
+const match_1 = require("./match");
+const baseFindSentences = (from) =&gt; (match = <span class="branch-0 cbranch-no" title="branch not covered" >match_1.isTrue,</span> context = <span class="branch-0 cbranch-no" title="branch not covered" >(0, match_1.defaultMatchContext)())</span> =&gt; (from.filter(s =&gt; match(s, context)));
+exports.baseFindSentences = baseFindSentences;
+const findSentences = <span class="fstat-no" title="function not covered" >(f</span>rom) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>atch = <span class="branch-0 cbranch-no" title="branch not covered" >match_1.isTrue,</span> context = <span class="branch-0 cbranch-no" title="branch not covered" >(0, match_1.defaultMatchContext)())</span> =&gt; (<span class="cstat-no" title="statement not covered" >baseFindSentences(from)((0, match_1.and)(match_1.objectExists, match), context))</span>;</span>
+exports.findSentences = findSentences;
+const baseFind = <span class="fstat-no" title="function not covered" >({</span> findSentences, result }) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(f</span>rom) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>atch, context) =&gt; <span class="cstat-no" title="statement not covered" >result(findSentences(from)(match, context));</span></span></span>
+const groupSentences = (sentences) =&gt; (part) =&gt; {
+    return sentences.reduce((result, sentence) =&gt; {
+        const groupValue = sentence[part];
+        if (groupValue &amp;&amp; !result[groupValue])
+            result[groupValue] = [];
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (groupValue)
+            result[groupValue].push(sentence);
+        return result;
+    }, {});
+};
+exports.groupSentences = groupSentences;
+const combineContext = <span class="fstat-no" title="function not covered" >(.</span>..contexts) =&gt; (<span class="cstat-no" title="statement not covered" >contexts.reduce(<span class="fstat-no" title="function not covered" >(r</span>esult, context) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return context ? Object.assign(Object.assign(Object.assign({}, result), context), { sentences: Object.assign(Object.assign({}, result.sentences), context.sentences) }) : result;</span>
+}, (0, match_1.defaultMatchContext)()));
+const addSentencesToContext = (name) =&gt; (sentences) =&gt; (context) =&gt; (Object.assign(Object.assign({}, context), { sentences: Object.assign(Object.assign({}, context.sentences), { [name]: sentences }) }));
+exports.addSentencesToContext = addSentencesToContext;
+const sentencesBasicResult = <span class="fstat-no" title="function not covered" >(s</span>entences) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+    sentences: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >sentences,</span>
+});
+const addSentenceResult = <span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { sentence: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences[0] || null </span>}))</span>;
+const addSubjectAsNodesResult = <span class="fstat-no" title="function not covered" >(s</span>ubjectNode) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { subjectAsNodes: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences().map(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >subjectNode(s.subject))</span> </span>}))</span>;</span>
+const addObjectAsNodesResult = <span class="fstat-no" title="function not covered" >(p</span>redicateNode) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { objectAsNodes: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences().map(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >predicateNode(s.subject)(s.predicate))</span> </span>}))</span>;</span>
+const addObjectAsNodeResult = <span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { addObjectasNode: result.objectAsNodes()[0] || null }))</span>;
+const sentenceResult = <span class="fstat-no" title="function not covered" >(p</span>rops) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>entences) =&gt; <span class="cstat-no" title="statement not covered" >(0, lodash_1.flow)(addSentenceResult, addObjectAsNodesResult(props.predicateNode), addObjectAsNodeResult, addSubjectAsNodesResult(props.subjectNode))(sentencesBasicResult(sentences));</span></span>
+//# sourceMappingURL=find.js.map</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
+                at Wed Sep 22 2021 10:53:16 GMT-0500 (Central Daylight Time)
+            </div>
+        </div>
+        <script src="prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="sorter.js"></script>
+        <script src="block-navigation.js"></script>
+    </body>
+</html>
+    
