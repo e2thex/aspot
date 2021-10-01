@@ -1,8 +1,8 @@
 {
   "name": "@aspot/core",
   "version": "0.1.0",
-  "description": "Provides a datastore that stores all data as Subject Predicate Object sentences",
-  "author": "Summerfield, Erik [CPCUS Non-J&J] <esummer3@ITS.JNJ.com>",
+  "description": "Provides a store that composes all data as Subject Predicate Object sentences",
+  "author": "Summerfield, Erik <erik@e2thex.org>",
   "homepage": "https://github.com/e2thex/aspot#readme",
   "license": "ISC",
   "main": "lib/aspot.js",
