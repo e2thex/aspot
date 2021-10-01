@@ -1,8 +1,5 @@
-import {MatchContext, MatchFunc, MatchWithMeta, Sentence, Term, TermType } from "./depricated/types";
-import { Match } from './basicStoreNode';
-import { match } from "assert";
+import { Match, Sentence, Term, TermType} from './basicStoreNode';
 
-const defaultMatchContext = () => ({sentences:{}} as MatchContext);
 const isTrue:Match = (context) =>(sentence) => true;
 const isFalse:Match = (context) =>(sentence) => false;
 
@@ -78,7 +75,6 @@ export {
   joinPrev,
   // matchPartial,
   objectExists,
-  defaultMatchContext,
   // basicWhere,
   // where,
 }

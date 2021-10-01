@@ -5,7 +5,9 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
-    "tsc": "lerna run tsc"
+    "tsc": "lerna run tsc",
+    "build": "lerna run build",
+    "publish": "lerna publish"
   },
   "dependencies": {
     "-": "0.0.1",
