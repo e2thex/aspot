@@ -1,3 +1,4 @@
+/*
 import { flatten, flow } from 'lodash';
 import { and, defaultMatchContext, isTrue, objectExists } from "./match";
 import { GroupSentences, Match, MatchContext, Sentence, SentenceResult, SubjectNode, Term, WhereMatch } from "./types";
@@ -12,7 +13,7 @@ const findSentences = (from:Sentence[]) => (match:Match=isTrue, context:MatchCon
 ); 
 const baseFind = ({findSentences, result}) =>(from:Sentence[]) => (match?:Match, context?:MatchContext) => result(findSentences(from)(match, context))
 
-const groupSentences = (sentences:Sentence[]) => (part:Term) =>{
+const groupSentences =  (part:Term) => (sentences:Sentence[]) =>{
   return sentences.reduce((result, sentence) => {
     const groupValue = sentence[part];
     if(groupValue && !result[groupValue]) result[groupValue] = [];
@@ -56,3 +57,4 @@ export {
   whereGroupSentences,
   groupToSentences,
 }
+*/

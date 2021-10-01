@@ -1,64 +1,72 @@
-import { group } from "console";
-import { flow, result } from "lodash";
-import { addSentencesToContext, groupSentences, whereGroupSentences, groupToSentences } from "./find";
-import { defaultMatchContext, matchPartial } from "./match";
-import { GroupSentences, Match, MatchContext, PredicateNode, Sentence, SubjectNode, Term, WhereMatch } from "./types";
+/*
+import { flow} from "lodash";
+import { addSentencesToContext } from "./find";
+import { defaultMatchContext } from "./match";
+import { GroupSentences, Match, MatchContext, Sentence, Term, WhereMatch } from "./types";
 
+export type SentencesResult<P, S, R, G> = {
+  sentences: () => Sentence[],
+  context: () => MatchContext,
+  subjectAsNodes: () => S[],
+  objectAsNodes: () => P[],
+  objectAsNode: () => P | null,
+  subjectAsNode: () => S | null,
+  nextAs: (name:string) => (match:Match) => R
+  next: (match:Match) => R
+  groupBy: (part:Term) => G
+}
 export type SentencesBasicResult = {
   sentences: () => Sentence[],
+
 }
 export type ContextResult = {
   context: () => MatchContext,
 }
-type SentenceResult = {
+export type SentenceResult = {
   sentence: () => Sentence | null;
 };
 export type SubjectAsNodesResult<S> = {
   subjectAsNodes: () => S[],
 }
-type ObjectAsNodesResult<P> = {
+export type ObjectAsNodesResult<P> = {
   objectAsNodes: () => P[],
 }
-type ObjectAsNodeResult<P> = {
+export type ObjectAsNodeResult<P> = {
   objectAsNode: () => P | null,
 }
-type SubjectAsNodeResult<S> = {
+export type SubjectAsNodeResult<S> = {
   subjectAsNode: () => S | null,
 }
-type NextAsResult<R> = {
+export type NextAsResult<R> = {
   nextAs: (name:string) => (match:Match) => R
 }
-type NextResult<R> = {
-  nextAs: (match:Match) => R
+export type NextResult<R> = {
+  next: (match:Match) => R
 }
-type GroupByResult<G> = {
+export type GroupByResult<G> = {
   groupBy: (part:Term) => G
 }
-type PartResult = {
+export type PartResult = {
   part: () => Term;
 }
-type WhereResult<G> = {
+export type WhereResult<G> = {
   where: (m:WhereMatch) => G
 }
+export type DegroupResult<R> = {
+  degroup: () => R
+}
+export type AsNodesResult<S> = {
+  asNodes: () => S[]
+}
+export type HavingResult<G> = {
+  having: (m:WhereMatch) => G
+}
 
-type SubjectNodeGen<S> = (s:string) => S;
-type PredicateNodeGen<P> = (subject:string)  => (predicate:string)=> P;
-type Find<R> = (match:Match, context?:MatchContext) => R
-export type GroupGen<G> = (part:Term) => (sentences:Sentence[], Context?:MatchContext) => G;
-export type GroupedSentencesGen = (part:Term) => (sentences:Sentence[], Context?:MatchContext) => GroupSentences;
-type SentenceResultProps<P, S, R, G> = {
-  predicateNode: PredicateNodeGen<P>,
-  subjectNode: SubjectNodeGen<S>,
-  find: Find<R>,
-  group: GroupGen<G>,
-}
-type GroupResultProps<R, S, G> = {
-  subjectNode: SubjectNodeGen<S>,
-  sentenceResult: SentencesResultGen<R>,
-  groupSentences: GroupedSentencesGen,
-  group: GroupGen<G>,
-  
-}
+export type SubjectNodeGen<S> = (s:string) => S;
+export type PredicateNodeGen<P> = (subject:string)  => (predicate:string)=> P;
+export type Find<R> = (match:Match, context?:MatchContext) => R
+export type GroupResultGen<G> = (part:Term) => (sentences:Sentence[], Context?:MatchContext) => G;
+export type GroupedSentencesGen = (part:Term) => (sentences:Sentence[]) => GroupSentences;
 const sentencesBasicResult = (sentences:Sentence[]) => <A extends {}> (result:A) => ({
   ...result,
   sentences: () => sentences,
@@ -104,44 +112,22 @@ const addNextResult = <R, A extends NextAsResult<R>> (result:A) => ({
   ...result,
   next: result.nextAs('prev')
 })
-const addGroupByResult =<G> (group: GroupGen<G>) => <A extends SentencesBasicResult & ContextResult> (result:A) => ({
+const addGroupByResult =<G> (group: GroupResultGen<G>) => <A extends SentencesBasicResult & ContextResult> (result:A) => ({
   ...result,
   groupBy: (part:Term) => group(part)(result.sentences(), result.context())
 });
-type SentencesResult<P, S, R, G> =
-  SentencesBasicResult
-  & ContextResult
-  & SentenceResult
-  & SubjectAsNodesResult<S>
-  & SubjectAsNodeResult<S>
-  & ObjectAsNodesResult<P>
-  & ObjectAsNodeResult<P>
-  & NextAsResult<R>
-  & NextResult<R>
-  & GroupByResult<G>
-;
-const sentencesResult =<P,S, R, G> (props:SentenceResultProps<P, S, R, G>) => (sentences:Sentence[], context?:MatchContext):SentencesResult<P,S, R, G> =>flow(
-  addNextResult,
-  addNextAsResult(props.find),
-  addSubjectAsNodeResult,
-  addSubjectAsNodesResult(props.subjectNode),
-  addObjectAsNodeResult,
-  addObjectAsNodesResult(props.predicateNode),
-  addSentenceResult,
-  addContextResult(context),
-  sentencesBasicResult(sentences),
-)({});
+
 const addPartResult = (part:Term) => <A extends {}> (result:A) => ({
   ...result,
   part: () => part,
 })
-type SentencesResultGen<R> = (sentences:Sentence[], context?:MatchContext) => R;
-type GroupedSentencesResult = {
+export type SentencesResultGen<R> = (sentences:Sentence[], context?:MatchContext) => R;
+export type GroupedSentencesResult = {
   groupedSentences: () => GroupSentences;
 }
 const addGroupedSentencesResult = (groupSentences:GroupedSentencesGen) => <A extends SentencesBasicResult & ContextResult & PartResult> (result:A) =>({
   ...result,
-  groupedSentences: () => groupSentences(result.part())(result.sentences(), result.context())
+  groupedSentences: () => groupSentences(result.part())(result.sentences())
 })
 const addDegroupResult =<R> (sentencesResult:SentencesResultGen<R>)=> <A extends SentencesBasicResult & ContextResult> (result:A) =>({
   ...result,
@@ -161,9 +147,9 @@ const addAsNodesResult = <S, A extends SentencesBasicResult> (subjectNode:Subjec
 )(result)
 
 export type WhereGroupSentences = (result:GroupSentences) => (match:WhereMatch,context?:MatchContext ) => GroupSentences;
-type AddHavingResultProps<G> = {
+export type AddHavingResultProps<G> = {
   groupToSentences:(g:GroupSentences) => Sentence[], 
-  groupResult:GroupGen<G>,
+  groupResult:GroupResultGen<G>,
   whereGroupSentences:WhereGroupSentences,
 }
 const addHavingResult = <G, A extends GroupedSentencesResult & ContextResult & PartResult> (props:AddHavingResultProps<G>) => (result:A) => {
@@ -180,23 +166,14 @@ const addHavingResult = <G, A extends GroupedSentencesResult & ContextResult & P
   }
 }
 
-const groupResult =<G, R, S> (props:GroupResultProps<R, S, G>) => (sentences:Sentence[], context?:MatchContext) => (part:Term) => flow(
-  sentencesBasicResult(sentences),
-  addContextResult(context),
-  addPartResult(part),
-  addGroupedSentencesResult(props.groupSentences),
-  addAsNodesResult(props.subjectNode),
-  addDegroupResult(props.sentenceResult),
-  addHavingResult({whereGroupSentences, groupToSentences,groupResult:props.group })
-)({})
 export {
-  sentencesResult,
   addObjectAsNodeResult,
   addObjectAsNodesResult,
   addSubjectAsNodeResult,
   addSubjectAsNodesResult,
   addSentenceResult,
   addContextResult,
+  addAsNodesResult,
   sentencesBasicResult,
   addNextAsResult,
   addGroupByResult,
@@ -206,3 +183,4 @@ export {
   addPartResult,
   addHavingResult,
 }
+*/

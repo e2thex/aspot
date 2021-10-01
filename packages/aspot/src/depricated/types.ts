@@ -10,9 +10,7 @@ export enum TermType {
   predicate = 'predicate',
 };
 export type Term = 'subject' | 'object' | 'predicate'
-export type GroupSentences = {
-  [key:string]: Sentence[]
-}
+export type GroupSentences = Record<string, Sentence[]>;
 export type OnFunc = (val:string|null|PredicateNode[]) => void;
 export type AspotNode = {
   s: (p?:string) => PredicateNode,

@@ -1,81 +1,84 @@
-import { Match, MatchContext, MatchFunc, MatchWithMeta, Sentence, Term, TermType } from "./types";
+import {MatchContext, MatchFunc, MatchWithMeta, Sentence, Term, TermType } from "./depricated/types";
+import { Match } from './basicStoreNode';
+import { match } from "assert";
 
 const defaultMatchContext = () => ({sentences:{}} as MatchContext);
-const isTrue:Match = () => true;
-const isFalse:Match = () => false;
+const isTrue:Match = (context) =>(sentence) => true;
+const isFalse:Match = (context) =>(sentence) => false;
 
-const not = (clause:Match):Match =>  addMatchMeta((sentence, context) => !clause(sentence, context));
-const and = (...clauses:Match[]) => addMatchMeta((sentence:Sentence, context?:MatchContext) => (
-  clauses.reduce((result, clause) => result && clause(sentence, context) ,true)
-));
-const or = (...clauses:Match[]) => addMatchMeta((sentence:Sentence, context?:MatchContext) => (
-  clauses.reduce((result, clause) => result || clause(sentence, context) ,false)
-));
-const regExOrCompare = (test:string|RegExp) => (val:string) => (
-  (test instanceof RegExp) 
-    ? (val.match(test) ? true : false)
-    : val === test
-); 
-const is = (part:Term) => (v:string|RegExp) =>  addMatchMeta((sentence:Sentence) => {
+const not= (clause:Match):Match => (context) =>  (sentence) => !clause(context)(sentence);
+const and = (...clauses:Match[]):Match => (context) => (sentence:Sentence) => (
+  clauses.reduce((result, clause) => result && clause(context)(sentence) ,true)
+);
+const or = (...clauses:Match[]):Match => (context) => (sentence:Sentence) => (
+  clauses.reduce((result, clause) => result || clause(context)(sentence) ,false)
+);
+const has = (part:Term) => (v:string|RegExp):Match => (context) => (sentence:Sentence) => {
+  const regExOrCompare = (test:string|RegExp) => (val:string) => (
+    (test instanceof RegExp) 
+      ? (val.match(test) ? true : false)
+      : val === test
+  ); 
   const compare = sentence[part]
   if (!compare) return false;
   return regExOrCompare(v)(compare);
-}); 
+}; 
 
-const join = (resultName:string) => (prev:Term) =>(next:Term) => addMatchMeta(
-  (sentence, context) => {
-    const { sentences } = context || defaultMatchContext();
-    return sentences[resultName] ? sentences[resultName].map(s => s[prev]).includes(sentence[next]) : false;
-  } 
-);
+const join = (resultName:string) => (prev:Term) =>(next:Term):Match => (context) =>  (sentence) => {
+    return context.has(resultName)  ? context.get(resultName).sentences().map(s => s[prev]).includes(sentence[next]) : true;
+  } ;
 const objectExists = (sentence:Sentence) => sentence.object !==null;
-const addMatchMeta = (match:MatchFunc):MatchWithMeta => {
-  return Object.assign(
-    match,
-    {
-        or: (nextMatch:Match) => or(match, nextMatch),
-        and: (nextMatch:Match) => and(match, nextMatch),
-        simple: (sentence:Sentence) => match(sentence),
-    }
-  )
-}
+// const addMatchMeta = (match:MatchFunc):MatchWithMeta => {
+//   return Object.assign(
+//     match,
+//     {
+//         or: (nextMatch:Match) => or(match, nextMatch),
+//         and: (nextMatch:Match) => and(match, nextMatch),
+//         simple: (sentence:Sentence) => match(sentence),
+//     }
+//   )
+// }
 
-const subjectIs = (subject:string|RegExp):Match => is(TermType.subject)(subject);
-const predicateIs = (predicate:string|RegExp):Match => is(TermType.predicate)(predicate); 
-const objectIs = (object:string|RegExp):Match => is(TermType.object)(object);
-const matchPartial = (search:Partial<Sentence>) => addMatchMeta(
-  and(...Object.keys(search).map(s => is(s as Term)(search[s])))
-);
-type WhereObject = {
-  match: (part:Term) => Match,
-  matchPrev: (prevPart:Term) => Match,
-  matchWith: (search:string) => (prevPart:Term) => Match
-}
-const basicWhere = (props) => (part:Term) => {
-  const { is, join } = props;
-  return {
-    match: is(part),
-    matchPrev: (prevPart:Term) => join('prev')(prevPart)(part),
-    matchWith: (search:string) => (prevPart:Term) => join(search)(prevPart)(part),
-  } as WhereObject
-}
-const where = basicWhere({is, join});
-const joinPrev = join('prev')
+
+// type WhereObject = {
+//  match: (part:Term) => Match,
+//  matchPrev: (prevPart:Term) => Match,
+//  matchWith: (search:string) => (prevPart:Term) => Match
+// }
+// type Where =(part:Term, search:string|regex|
+// const basicWhere = (props) => (part:Term) => {
+//   const { has, join } = props;
+//   return {
+//     match: has(part),
+//     matchPrev: (prevPart:Term) => join('prev')(prevPart)(part),
+//     matchWith: (search:string) => (prevPart:Term) => join(search)(prevPart)(part),
+//   } as WhereObject
+// }
+// const where = basicWhere({has, join});
+
+
+
+// BELOW THIS ARE NOT TESTED
+const joinPrev = join('prev');
+const subjectIs = (subject:string|RegExp):Match => has(TermType.subject)(subject);
+const predicateIs = (predicate:string|RegExp):Match => has(TermType.predicate)(predicate); 
+const objectIs = (object:string|RegExp):Match => has(TermType.object)(object);
+const matchPartial = (search:Partial<Sentence>) => and(...Object.keys(search).map(s => has(s as Term)(search[s])))
 export {
 	isTrue,
 	isFalse,
 	not,
   and,
   or,
-  is,
-  subjectIs,
-  predicateIs,
-  objectIs,
+  has,
+   subjectIs,
+   predicateIs,
+   objectIs,
   join,
   joinPrev,
-  matchPartial,
+  // matchPartial,
   objectExists,
   defaultMatchContext,
-  basicWhere,
-  where,
+  // basicWhere,
+  // where,
 }
