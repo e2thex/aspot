@@ -43,7 +43,7 @@ const attachFind=<A extends ContextNode & StoreNode> (node:A) => {
 }
 
 */
-type ARootNode<A extends StoreNode> = A & {
+export type RootNode<A extends StoreNode> = A & {
   node: (subject) => SubjectNode<A>,
   find: (match:Match, name?:string) => ResultNode<A>,
 }
@@ -52,7 +52,7 @@ type RootNodeDeps<A extends StoreNode> = {
   resultNode: ResultNodeGen<A>,
   uuid: () => string,
 }
-const rootNodeCore =<A extends StoreNode> (deps:RootNodeDeps<A>) => (node:A): ARootNode<A> => {
+const rootNodeCore =<A extends StoreNode> (deps:RootNodeDeps<A>) => (node:A): RootNode<A> => {
   const { subjectNode, resultNode, uuid } = deps;
   return {
     ...node,

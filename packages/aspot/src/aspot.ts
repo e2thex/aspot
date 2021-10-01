@@ -1,6 +1,6 @@
 import basicStoreNode, { TermType, StoreNode } from "./basicStoreNode";
-import localNode from "./localNode";
-import rootNode from "./rootNode";
+import localConnector from "./localConnector";
+import rootNode, { RootNode } from "./rootNode";
 export * from './match';
 import { PredicateNode } from "./predicateNode";
 import { SubjectNode } from "./subjectNode";
@@ -9,12 +9,12 @@ import { SubjectNode } from "./subjectNode";
 
 
 const aspot = () => rootNode(basicStoreNode());
-const aspotLocal = (name:string) => rootNode(localNode(name)(basicStoreNode()));
 export {
   aspot,
-  aspotLocal,
+  localConnector,
   TermType,
   PredicateNode,
   SubjectNode,
   StoreNode,
+  RootNode,
 }

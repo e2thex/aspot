@@ -43,6 +43,7 @@ export type StoreNode = {
   set: (...updates:Sentence[]) => UpdateResponse[],
   get: (match:MatchContextualized) => Sentence[],
   watch: StoreWatch,
+  connect: (contector:(node:StoreNode) => void) => StoreNode;
 };
 const basicStoreNodeCore = (deps:BasicStoreNodeDeps) => (store:Store=emptyStore()):StoreNode => {
   const {sentenceKey } = deps;
@@ -63,10 +64,17 @@ const basicStoreNodeCore = (deps:BasicStoreNodeDeps) => (store:Store=emptyStore(
     watchers.forEach(watcher => watcher(...changes));
     return results;
   }
+  const get = (match:MatchContextualized) => Array.from(store.sentences.values()).filter(match);
+  const watch =  (watcher:Watcher) => { watchers.push(watcher)};
+  const connect = (connector) => {
+    connector({set, get, watch, connect:connect})
+    return {set, get, watch, connect};
+  };
   return ({
     set, 
-    get: (match:MatchContextualized) => Array.from(store.sentences.values()).filter(match),
-    watch: (watcher:Watcher) => { watchers.push(watcher)},
+    get,
+    watch,
+    connect,
   });
 }
 const basicStoreNode = basicStoreNodeCore({sentenceKey});

@@ -1,6 +1,6 @@
 import { exportAllDeclaration } from '@babel/types';
 import { WatchDirectoryFlags } from 'typescript';
-import basicStoreNode, { Sentence, sentenceKey, UpdateFailures, watcher } from '../basicStoreNode';
+import basicStoreNode, { Sentence, sentenceKey, StoreNode, UpdateFailures, watcher } from '../basicStoreNode';
 describe('BasicStoreNode', () => {
   const mkstore = (sentences:Sentence[], date) => ({
     sentences: new Map(sentences.map(s => [sentenceKey(s), s])),
@@ -97,6 +97,12 @@ describe('BasicStoreNode', () => {
     })
     
   })
+  it('Should have a contect method that takes a function that takes our node and then calls that function and returns it self', () => {
+    const sNode = basicStoreNode();
+    const connector = jest.fn((node:StoreNode) => {});
+    expect(sNode.connect(connector)).toStrictEqual(sNode);
+    expect(connector.mock.calls[0][0]).toStrictEqual(sNode);
+  });
 });
 describe("watcher", () => {
   it('should call action when match returns true on a sentence and it should return the sentence on which it ws true', () => {

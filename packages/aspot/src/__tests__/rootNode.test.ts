@@ -24,6 +24,7 @@ describe('rootNode', () => {
     get: jest.fn((m) => [{subject:'s', predicate:'p', object:'o', date:0}]) ,
     set: jest.fn((a) => []),
     watch: jest.fn((w) => {}),
+    connect: jest.fn(c => ({}) as StoreNode),
   })
   const context = new Map();
   const getReqs = () => ({
