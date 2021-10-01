@@ -1,5 +1,5 @@
 {
-  "name": "aspot",
+  "name": "@aspot/core",
   "version": "0.0.0",
   "description": "Provides a datastore that stores all data as Subject Predicate Object sentences",
   "author": "Summerfield, Erik [CPCUS Non-J&J] <esummer3@ITS.JNJ.com>",
