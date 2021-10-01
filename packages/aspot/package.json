@@ -39,5 +39,9 @@
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
     "babel-jest": "^27.2.1"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "681ce8a2419a3f3dd5fd9b102332c681281d14d1"
 }
