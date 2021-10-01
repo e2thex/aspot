@@ -5,7 +5,7 @@
   "author": "Summerfield, Erik [CPCUS Non-J&J] <esummer3@ITS.JNJ.com>",
   "homepage": "https://github.com/e2thex/aspot#readme",
   "license": "ISC",
-  "main": "lib/webSocket.js",
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
