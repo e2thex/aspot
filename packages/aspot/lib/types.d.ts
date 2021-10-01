@@ -10,9 +10,7 @@ export declare enum TermType {
     predicate = "predicate"
 }
 export declare type Term = 'subject' | 'object' | 'predicate';
-export declare type GroupSentences = {
-    [key: string]: Sentence[];
-};
+export declare type GroupSentences = Record<string, Sentence[]>;
 export declare type OnFunc = (val: string | null | PredicateNode[]) => void;
 export declare type AspotNode = {
     s: (p?: string) => PredicateNode;

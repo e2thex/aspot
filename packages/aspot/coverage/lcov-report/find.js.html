@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60.71% </span>
+                <span class="strong">84.78% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>34/56</span>
+                <span class='fraction'>39/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">31.25% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/16</span>
+                <span class='fraction'>7/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.03% </span>
+                <span class="strong">65% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>9/31</span>
+                <span class='fraction'>13/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.1% </span>
+                <span class="strong">96.77% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/29</span>
+                <span class='fraction'>30/31</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -91,7 +91,11 @@
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -113,21 +117,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addSentencesToContext = exports.groupSentences = exports.baseFindSentences = exports.findSentences = void 0;
+exports.groupToSentences = exports.whereGroupSentences = exports.addSentencesToContext = exports.groupSentences = exports.baseFindSentences = exports.findSentences = void 0;
 const lodash_1 = require("lodash");
 const match_1 = require("./match");
 const baseFindSentences = (from) =&gt; (match = <span class="branch-0 cbranch-no" title="branch not covered" >match_1.isTrue,</span> context = <span class="branch-0 cbranch-no" title="branch not covered" >(0, match_1.defaultMatchContext)())</span> =&gt; (from.filter(s =&gt; match(s, context)));
@@ -135,7 +143,7 @@ exports.baseFindSentences = baseFindSentences;
 const findSentences = <span class="fstat-no" title="function not covered" >(f</span>rom) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>atch = <span class="branch-0 cbranch-no" title="branch not covered" >match_1.isTrue,</span> context = <span class="branch-0 cbranch-no" title="branch not covered" >(0, match_1.defaultMatchContext)())</span> =&gt; (<span class="cstat-no" title="statement not covered" >baseFindSentences(from)((0, match_1.and)(match_1.objectExists, match), context))</span>;</span>
 exports.findSentences = findSentences;
 const baseFind = <span class="fstat-no" title="function not covered" >({</span> findSentences, result }) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(f</span>rom) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(m</span>atch, context) =&gt; <span class="cstat-no" title="statement not covered" >result(findSentences(from)(match, context));</span></span></span>
-const groupSentences = (sentences) =&gt; (part) =&gt; {
+const groupSentences = (part) =&gt; (sentences) =&gt; {
     return sentences.reduce((result, sentence) =&gt; {
         const groupValue = sentence[part];
         if (groupValue &amp;&amp; !result[groupValue])
@@ -146,19 +154,23 @@ const groupSentences = (sentences) =&gt; (part) =&gt; {
     }, {});
 };
 exports.groupSentences = groupSentences;
+const whereGroupSentences = (result) =&gt; (match, context) =&gt; {
+    return Object.keys(result).reduce((r, key) =&gt; {
+        const s = result[key];
+        if (match(s, context)) {
+            r[key] = result[key];
+        }
+        return r;
+    }, {});
+};
+exports.whereGroupSentences = whereGroupSentences;
+const groupToSentences = (group) =&gt; (0, lodash_1.flatten)(Object.values(group));
+exports.groupToSentences = groupToSentences;
 const combineContext = <span class="fstat-no" title="function not covered" >(.</span>..contexts) =&gt; (<span class="cstat-no" title="statement not covered" >contexts.reduce(<span class="fstat-no" title="function not covered" >(r</span>esult, context) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return context ? Object.assign(Object.assign(Object.assign({}, result), context), { sentences: Object.assign(Object.assign({}, result.sentences), context.sentences) }) : result;</span>
 }, (0, match_1.defaultMatchContext)()));
 const addSentencesToContext = (name) =&gt; (sentences) =&gt; (context) =&gt; (Object.assign(Object.assign({}, context), { sentences: Object.assign(Object.assign({}, context.sentences), { [name]: sentences }) }));
 exports.addSentencesToContext = addSentencesToContext;
-const sentencesBasicResult = <span class="fstat-no" title="function not covered" >(s</span>entences) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-    sentences: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >sentences,</span>
-});
-const addSentenceResult = <span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { sentence: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences[0] || null </span>}))</span>;
-const addSubjectAsNodesResult = <span class="fstat-no" title="function not covered" >(s</span>ubjectNode) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { subjectAsNodes: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences().map(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >subjectNode(s.subject))</span> </span>}))</span>;</span>
-const addObjectAsNodesResult = <span class="fstat-no" title="function not covered" >(p</span>redicateNode) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { objectAsNodes: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >result.sentences().map(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >predicateNode(s.subject)(s.predicate))</span> </span>}))</span>;</span>
-const addObjectAsNodeResult = <span class="fstat-no" title="function not covered" >(r</span>esult) =&gt; (<span class="cstat-no" title="statement not covered" >Object.assign(Object.assign({}, result), { addObjectasNode: result.objectAsNodes()[0] || null }))</span>;
-const sentenceResult = <span class="fstat-no" title="function not covered" >(p</span>rops) =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>entences) =&gt; <span class="cstat-no" title="statement not covered" >(0, lodash_1.flow)(addSentenceResult, addObjectAsNodesResult(props.predicateNode), addObjectAsNodeResult, addSubjectAsNodesResult(props.subjectNode))(sentencesBasicResult(sentences));</span></span>
 //# sourceMappingURL=find.js.map</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -166,7 +178,7 @@ const sentenceResult = <span class="fstat-no" title="function not covered" >(p</
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Sep 22 2021 10:53:16 GMT-0500 (Central Daylight Time)
+                at Thu Sep 23 2021 16:09:36 GMT-0500 (Central Daylight Time)
             </div>
         </div>
         <script src="prettify.js"></script>

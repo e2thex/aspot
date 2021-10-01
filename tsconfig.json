@@ -10,10 +10,13 @@
    "target": "es6",
    "sourceMap": true,
    "lib": [
-     "es2017"
+     "es2017",
+     "DOM",
+     "ES6"
    ]
  },
  "exclude": [
    "node_modules",
+   "__tests__"
  ]
 }
