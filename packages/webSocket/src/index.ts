@@ -1,5 +1,5 @@
-import { Sentence, RootNode } from '@aspot/core';
-const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:RootNode) => {
+import { Sentence, StoreNode } from '@aspot/core';
+const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:StoreNode) => {
   const {
     WebSocket
   } = deps;

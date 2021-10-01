@@ -1,4 +1,4 @@
-import basicStoreNode, { TermType, StoreNode } from "./basicStoreNode";
+import basicStoreNode, { TermType, StoreNode, Sentence } from "./basicStoreNode";
 import localConnector from "./localConnector";
 import rootNode, { RootNode } from "./rootNode";
 export * from './match';
@@ -17,4 +17,5 @@ export {
   SubjectNode,
   StoreNode,
   RootNode,
+  Sentence,
 }
