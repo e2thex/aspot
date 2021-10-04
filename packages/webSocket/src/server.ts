@@ -4,7 +4,7 @@ import { WebSocket as WST, WebSocketServer as WSST } from 'typestub-ws';
 const WS = WebSocket as WST;
 const WSS = WebSocketServer as WSST;
 const groups = {};
-const port = process.argv[2] ||8080
+const port = process.argv[2] || process.env.PORT || 80
 console.log(process.argv);
 const wss = new WebSocketServer({ port }) as WSST;
 wss.on('connection', (ws:WST) => {
