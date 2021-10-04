@@ -1,6 +1,6 @@
 {
   "name": "@aspot/websocket",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "A module that provides a connector to aspot node that will allow sites to talk to each other via a websocket (also proves a websocket server)",
   "author": "Summerfield, Erik [CPCUS Non-J&J] <esummer3@ITS.JNJ.com>",
   "homepage": "https://github.com/e2thex/aspot#readme",
