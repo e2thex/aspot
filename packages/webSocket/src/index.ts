@@ -1,4 +1,3 @@
-import { WebSocket } from 'ws';
 import { Sentence, StoreNode } from '@aspot/core';
 const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:StoreNode) => {
   const {
