@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { Sentence, StoreNode } from '@aspot/core';
 const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:StoreNode) => {
   const {
@@ -22,12 +23,17 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
       })
     });
     const sendUpdate = (...sentences:Sentence[]) => {
-      const pack = {action:'update', group, sentences}
-      ws.send(JSON.stringify(pack))
+      if(sentences.length > 0) {
+        const pack = {action:'update', group, sentences}
+        ws.send(JSON.stringify(pack))
+      }
     }
     const sendAllUpdate = () => {
-      const pack = {action:'update', group, sentences: node.get(() => true)}
-      ws.send(JSON.stringify(pack))
+      const sentences =  node.get(() => true);
+      if (sentences.length > 0) {
+        const pack = {action:'update', group, sentences}
+        ws.send(JSON.stringify(pack))
+      } 
     }
     node.watch(sendUpdate)
 
