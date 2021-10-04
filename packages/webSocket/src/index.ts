@@ -1,8 +1,6 @@
 import { Sentence, StoreNode } from '@aspot/core';
 const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:StoreNode) => {
-  const {
-    WebSocket
-  } = deps;
+  const {} = deps;
   if(typeof window !== 'undefined') {
     const onUpdate = (sentence:Sentence) => {
       node.set(sentence);
@@ -38,5 +36,5 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
 
   }
 }
-const webSocketConnector = webSocketConnectorCore({WebSocket});
+const webSocketConnector = webSocketConnectorCore({});
 export default webSocketConnector;

@@ -3,8 +3,10 @@ import { WebSocket as WST, WebSocketServer as WSST } from 'typestub-ws';
 
 const WS = WebSocket as WST;
 const WSS = WebSocketServer as WSST;
-const wss = new WebSocketServer({ port: 8080 }) as WSST;
 const groups = {};
+const port = process.argv[2] ||8080
+console.log(process.argv);
+const wss = new WebSocketServer({ port }) as WSST;
 wss.on('connection', (ws:WST) => {
   ws.on('message', (message, isBinary) => {
     console.log('received: %s', message);
@@ -20,4 +22,4 @@ wss.on('connection', (ws:WST) => {
     }
   });
 });
-console.log("listening on 8080");
+console.log(`listening om ${port}`);
