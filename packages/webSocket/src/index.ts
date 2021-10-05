@@ -6,6 +6,10 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
       node.set(sentence);
     }
     const ws = new WebSocket(url);
+    const ping = () => {
+      ws.send(JSON.stringify({action:'ping'}));
+      window.setTimeout(ping, 2000);
+    }
     ws.addEventListener('open', function (event) {
       ws.send(JSON.stringify({action:'join', group}));
       ws.send(JSON.stringify({action:'requestUpdates', group}));
@@ -18,6 +22,7 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
           sendAllUpdate();
         }
       })
+      ping();
     });
     const sendUpdate = (...sentences:Sentence[]) => {
       if(sentences.length > 0) {
