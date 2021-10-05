@@ -32,3 +32,5 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: mattallty/jest-github-action@43bbcd073fa43a927322f188220b6592acae003b
         uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
