@@ -1,4 +1,5 @@
 import { Sentence, StoreNode, WatcherGen, watcher } from './basicStoreNode'
+import { objectExists } from './match';
 import predicateNode, { OnSet, PredicateNode, PredicateNodeGen, SMethod } from './predicateNode';
 export type SubjectNode<A extends StoreNode> = {
   s: SMethod<A>,
@@ -22,7 +23,7 @@ const subjectNodeCore =<A extends StoreNode> (reqs:SubjectNodeReq<A>) => (props:
     ...node,   
     s: (predicate:string) => predicateNode({onSet, subject, node, predicate}),
     on: (action) => node.watch(watcher(action)((s) => s.subject === subject)),
-    list: () => node.get((s) => s.subject === subject).map(s => predicateNode({onSet, subject, node, predicate:s.predicate}))
+    list: () => node.get((s) => (s.subject === subject) && (s.object !== null)).map(s => predicateNode({onSet, subject, node, predicate:s.predicate}))
   })
 }
 const subjectNode = subjectNodeCore({predicateNode, watcher});
