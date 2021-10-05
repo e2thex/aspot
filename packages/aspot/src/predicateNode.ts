@@ -26,7 +26,7 @@ const isGen:IsGen = (props) => (object) => {
   return set({subject, predicate, object, date:Date.now()})[0]
 }
 
-type PredicateNodeDeps = {
+export type PredicateNodeDeps = {
   is: IsGen,
   watcher: WatcherGen,
   uuid: () => string, 
@@ -41,7 +41,7 @@ export type SMethod<A extends StoreNode> = (predicate:string) => PredicateNode<A
 export type PredicateNode<A extends StoreNode> = {
   is: Is, 
   s: SMethod<A>,
-  del: () => void,
+  del: (depth?:number) => void,
   on: (action:(...s:Sentence[]) => void) => void,
   predicate: () => string,
 }
@@ -57,9 +57,16 @@ const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (pro
     }
     return predicateNodeCore(deps)({node, subject:object|| fallbackObject, predicate:predicateInternal, onSet:newOnSet})
   }
+  const del = ({subject, predicate}:{subject:string, predicate:string}) => (depth:number=0) => {
+    const object = is({...node, subject, predicate, onSet:() => {}})();
+    is({...node, subject, predicate, onSet:() => {}})(null);
+    if (depth && object) {
+      node.get(s => s.subject === object).forEach(s => del({...s})(depth-1))
+    }
+  }
   return {
     ...node,
-    del: () => is({...node, subject, predicate, onSet})(null),
+    del: del({subject, predicate}),
     is: is({...node, subject, predicate, onSet}),
     on: (action) => node.watch(watcher(action)(match(emptyContext()))),
     s: internalS,
@@ -69,3 +76,6 @@ const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (pro
 const predicateNode = predicateNodeCore({is:isGen, watcher, uuid:v4});
 export type PredicateNodeGen<A extends StoreNode> = (p:PredicateNodeProps<A>) => PredicateNode<A>;
 export default predicateNode;
+export {
+  predicateNodeCore,
+}
