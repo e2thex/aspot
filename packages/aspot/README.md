@@ -1,4 +1,4 @@
-# `ASPOT`
+# ASPOT
 
 ASPOT is a subject Predicate Object Transformer.  It is a store that hold all of its data as a array of sentences with three parts subject predicate and object. As an example lets see some information about Bob.
 
@@ -69,7 +69,7 @@ we can then start walking the node tree using the `s` function.  and can use the
 ``` js
 const firstName = bob.s('firstName').is();
 const lastName = bob.s('lastName').is();
-cosnt husbandFirstName = bob.s('husband').s('firstName').is();
+const husbandFirstName = bob.s('husband').s('firstName').is();
 ```
 
 The `is` function can also be used to set values
