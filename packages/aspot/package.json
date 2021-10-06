@@ -1,6 +1,6 @@
 {
   "name": "@aspot/core",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Provides a store that composes all data as Subject Predicate Object sentences",
   "author": "Summerfield, Erik <erik@e2thex.org>",
   "homepage": "https://github.com/e2thex/aspot#readme",
