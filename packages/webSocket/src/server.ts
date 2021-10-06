@@ -11,6 +11,9 @@ wss.on('connection', (ws:WST) => {
   ws.on('message', (message, isBinary) => {
     console.log('received: %s', message);
     const {action, group, ...data} = JSON.parse(message.toString() as string);
+    if(action === 'ping') {
+      ws.send(message, {binary: isBinary});
+    }
     if(action === 'join') {
       if(!groups[group]) groups[group] = [];
       groups[group].push(ws);
