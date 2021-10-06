@@ -82,7 +82,93 @@ Along with the `is` method  there is an `on` method that can be pass a function 
 
 ``` js
 bob.s('age').on(age => sendBirthdayCard('bob', age))
+```
 
 ### Searching
 
-Not yet documented
+To search one using the `find` method of the store.  The point of the find is not to find data but to find a node in the map.  After doing the find one can then walk the nodes to get data or update data.
+
+The find method takes a match function.  There are a set of helper function that can be used here.
+
+#### Match Helpers
+
+##### `has`
+
+THe has helper is a curry function that takes a part to search on then a string or regex expresion
+
+``` js
+// Find statements that have on object of bob
+store.find(has(TermType.object)('bob'));
+// Find statements that finds any statements that have a prediate ending in Name
+store.find(has(TermType.predicate)/.*Name$/));
+```
+
+##### `not`
+
+Takes a different match and just does the inverse.
+
+``` js
+// Find statements that do not have on object of bob
+store.find(not(has(TermType.object)('bob')));
+```
+
+##### `and`
+
+Takes 1 or more other matches and does a match if they all return true
+
+``` js
+// Find statements that have a predicate of firstname as well as a object of bob
+store.find(and(has(TermType.predicate)('firstName')), has(TermType.object)('bob')));
+```
+
+##### `or`
+
+Takes 1 or more other matches and does a match if any of them return true
+
+``` js
+// Find statements have a object of sam or bob
+store.find(or(has(TermType.object)('sam')), has(TermType.object)('bob'))); 
+```
+
+##### `join`
+
+Is a bit speceal because it compares multiple finds.  With each find one can name it, and then refer to that name here.
+
+``` js
+// Find all statements about people that are a boss;
+find(has(TermType.predicate)('boss'), 'firstLevel')
+  .find(join('firstlevel')(TermType.object)(TermType.subject)) 
+// Find all statements about people that are a boss with a first name of bob
+find(has(TermType.predicate)('boss'), 'firstLevel')
+  .find(and(
+    join('firstlevel')(TermType.object)(TermType.subject)),
+    has(TermType.predicate)('firstName'),
+    has(TermType.object)('bob'),
+     
+```
+
+#### Result Object
+
+After one has done the find they can then start walking with two methods `nodes` and `list`.
+
+##### `nodes`
+
+Returns an array of nodes that are based on the unique subject for the last find.
+
+``` js
+// get the lastName of everyone person with firstName 'bob'
+const lastNames = store.find(and(has(TermType.predicate)('firstName'), has(TermType.object)('bob'))
+  .nodes()
+  .map(node => node.s('lastName').is())
+```
+
+##### `list`
+
+Returns an array of nodes that are based on each statement.
+
+``` js
+// get the lastName of everyone that is a boss
+const lastNames = store.find(TermType.predicate)('boss'))
+  .list()
+  .map(node => node.s('lastName').is())
+```
