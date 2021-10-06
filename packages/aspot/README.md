@@ -1,6 +1,25 @@
-# `aspot`
+# `ASPOT`
 
-> TODO: description
+ASPOT is a subject Predicate Object Transformer.  It is a store that hold all of its data as a array of sentences with three parts subject predicate and object. As an example lets see some information about Bob.
+
+| Subject                              | Predicate    | Object    |
+| ------------------------------------ | ------------ | --------- |
+| d47c38d1-4521-4c05-96a0-f14b3602bc3f | firstName    | Bob       |
+| d47c38d1-4521-4c05-96a0-f14b3602bc3f | lastName     | Newhart   |
+| d47c38d1-4521-4c05-96a0-f14b3602bc3f | age          | 75        |
+
+Now lets add more info about Bob's husband and Bobs relationship
+
+| Subject                              | Predicate    | Object    |
+| ------------------------------------ | ------------ | --------- |
+| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | firstName    | Sam       |
+| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | lastName     | Newhart   |
+| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | age          | 78        |
+| d47c38d1-4521-4c05-96a0-f14b3602bc3f | Husband      | fbf8d8d0-8886-4647-baa7-6cd82d45bf4c       |
+
+Because the data is stored in this way ASPOT can be use in a distribed manor where each of these sentences are updated independently of each other.
+
+While the data is stored this way as you will see in Usage this is not how we access the data.
 
 ## Instalation
 
@@ -33,7 +52,7 @@ localConnector('localStoragekey')(store);
 
 all change to the store will then be help in the browser localStorage.
 
-There are two main was to use the store, one is to walk the nodes and the other is do do a find.
+There are two main was to use the store, one is to walk the nodes and the other is to do a search.
 
 ### Walking nodes
 
@@ -53,7 +72,7 @@ const lastName = bob.s('lastName').is();
 cosnt husbandFirstName = bob.s('husband').s('firstName').is();
 ```
 
-The is function can also be used to set valules
+The `is` function can also be used to set values
 
 ``` js
 bob.s('middleName').is('Juan');
@@ -63,3 +82,7 @@ Along with the `is` method  there is an `on` method that can be pass a function 
 
 ``` js
 bob.s('age').on(age => sendBirthdayCard('bob', age))
+
+### Searching
+
+Not yet documented
