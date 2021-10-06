@@ -98,9 +98,9 @@ THe has helper is a curry function that takes a part to search on then a string 
 
 ``` js
 // Find statements that have on object of bob
-store.find(has(TermType.object)('bob'));
+const result = store.find(has(TermType.object)('bob'));
 // Find statements that finds any statements that have a prediate ending in Name
-store.find(has(TermType.predicate)/.*Name$/));
+const result = store.find(has(TermType.predicate)/.*Name$/));
 ```
 
 ##### `not`
@@ -109,7 +109,7 @@ Takes a different match and just does the inverse.
 
 ``` js
 // Find statements that do not have on object of bob
-store.find(not(has(TermType.object)('bob')));
+const result = store.find(not(has(TermType.object)('bob')));
 ```
 
 ##### `and`
@@ -118,7 +118,7 @@ Takes 1 or more other matches and does a match if they all return true
 
 ``` js
 // Find statements that have a predicate of firstname as well as a object of bob
-store.find(and(has(TermType.predicate)('firstName')), has(TermType.object)('bob')));
+const result = store.find(and(has(TermType.predicate)('firstName')), has(TermType.object)('bob')));
 ```
 
 ##### `or`
@@ -127,7 +127,7 @@ Takes 1 or more other matches and does a match if any of them return true
 
 ``` js
 // Find statements have a object of sam or bob
-store.find(or(has(TermType.object)('sam')), has(TermType.object)('bob'))); 
+const result = store.find(or(has(TermType.object)('sam')), has(TermType.object)('bob'))); 
 ```
 
 ##### `join`
@@ -136,10 +136,10 @@ Is a bit speceal because it compares multiple finds.  With each find one can nam
 
 ``` js
 // Find all statements about people that are a boss;
-find(has(TermType.predicate)('boss'), 'firstLevel')
+const result = store.find(has(TermType.predicate)('boss'), 'firstLevel')
   .find(join('firstlevel')(TermType.object)(TermType.subject)) 
 // Find all statements about people that are a boss with a first name of bob
-find(has(TermType.predicate)('boss'), 'firstLevel')
+const result = store.find(has(TermType.predicate)('boss'), 'firstLevel')
   .find(and(
     join('firstlevel')(TermType.object)(TermType.subject)),
     has(TermType.predicate)('firstName'),
