@@ -1,6 +1,6 @@
 {
   "name": "@aspot/react",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A package that brings the Aspot store to React",
   "author": "Summerfield, Erik [CPCUS Non-J&J] <esummer3@ITS.JNJ.com>",
   "homepage": "https://github.com/e2thex/aspot#readme",
