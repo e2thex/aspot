@@ -2,20 +2,20 @@
 
 ASPOT is a subject Predicate Object Transformer.  It is a store that hold all of its data as a array of sentences with three parts subject predicate and object. As an example lets see some information about Bob.
 
-| Subject                              | Predicate    | Object    |
-| ------------------------------------ | ------------ | --------- |
-| d47c38d1-4521-4c05-96a0-f14b3602bc3f | firstName    | Bob       |
-| d47c38d1-4521-4c05-96a0-f14b3602bc3f | lastName     | Newhart   |
-| d47c38d1-4521-4c05-96a0-f14b3602bc3f | age          | 75        |
+| Subject     | Predicate    | Object    |
+| ----------- | ------------ | --------- |
+| d47c38d1... | firstName    | Bob       |
+| d47c38d1... | lastName     | Newhart   |
+| d47c38d1... | age          | 75        |
 
 Now lets add more info about Bob's husband and Bobs relationship
 
-| Subject                              | Predicate    | Object    |
-| ------------------------------------ | ------------ | --------- |
-| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | firstName    | Sam       |
-| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | lastName     | Newhart   |
-| fbf8d8d0-8886-4647-baa7-6cd82d45bf4c | age          | 78        |
-| d47c38d1-4521-4c05-96a0-f14b3602bc3f | Husband      | fbf8d8d0-8886-4647-baa7-6cd82d45bf4c       |
+| Subject     | Predicate    | Object    |
+| ----------- | ------------ | --------- |
+| fbf8d8d0... | firstName    | Sam       |
+| fbf8d8d0... | lastName     | Newhart   |
+| fbf8d8d0... | age          | 78         |
+| d47c38d1... | Husband      | fbf8d8d0...       |
 
 Because the data is stored in this way ASPOT can be use in a distribed manor where each of these sentences are updated independently of each other.
 
@@ -61,7 +61,7 @@ I will be using an example of date around a person named bob in the following se
 to walk the nodes one first use `store.node` to initiate a node.
 
 ``` js
-const bob = store.node('d47c38d1-4521-4c05-96a0-f14b3602bc3f')
+const bob = store.node('d47c38d1...')
 ```
 
 we can then start walking the node tree using the `s` function.  and can use the `is` method to get values. One can use multiple `s` calls to keep walking'
