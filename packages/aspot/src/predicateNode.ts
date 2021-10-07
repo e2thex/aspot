@@ -69,6 +69,7 @@ export type PredicateNode<A extends StoreNode> = {
   del: (depth?:number) => void,
   on: (action:(...s:Sentence[]) => void) => void,
   predicate: () => string,
+  value: any,
 }
 const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (props:PredicateNodeProps<A>): PredicateNode<A> => {
   const {node, subject, predicate, onSet } = props;

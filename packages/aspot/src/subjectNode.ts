@@ -55,4 +55,5 @@ const subjectNode = subjectNodeCore({predicateNode, watcher, value: subjectValue
 export default subjectNode;
 export {
   subjectNodeCore,
+  subjectValueGen,
 }

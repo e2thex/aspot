@@ -3,16 +3,13 @@ import { useState } from 'react';
 
 const predicateNode =<A extends StoreNode> (props:PredicateNodeProps<A>) => {
   const orginalPredicateNode = predicateNodeCore(props);
-  return {
+  return Object.assign(orginalPredicateNode, {
     ...orginalPredicateNode,
-    is: Object.assign(orginalPredicateNode.is, {
-      use: () => {
-        const [v, setV ] = useState(orginalPredicateNode.is())
-        orginalPredicateNode.on((s) =>setV(s.object))
-        return v;
-      }
-    })
-
-  }
+    use: () => {
+      const [v, setV ] = useState(orginalPredicateNode.value())
+      orginalPredicateNode.on((s) =>setV(s.object))
+      return v;
+    }
+  })
 }
 export default predicateNode;
