@@ -15,7 +15,7 @@ type Store = {
   sentences: Map<string, Sentence>,
   date: number,
 }
-type UpdateResponse = 'olderThanStore' | 'olderThanCurrent' | void
+export type UpdateResponse = 'olderThanStore' | 'olderThanCurrent' | void
 export enum UpdateFailures {
   olderThanStore = 'olderThanStore',
   olderThanCurrent = 'olderThanCurrent',
