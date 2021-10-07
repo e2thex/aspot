@@ -1,6 +1,5 @@
 # `@aspot/react`
 
-> TODO: description
 
 ## Usage
 
