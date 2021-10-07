@@ -10,6 +10,11 @@ function useNode<A extends StoreNode>(node:PredicateNode<A> | SubjectNode<A>)  {
   node.on((s) =>setV(node.value()))
   return v;
 }
+function useNodeList<A extends StoreNode>(node:SubjectNode<A>)  {
+	const [v, setV ] = useState(node.list())
+  node.on((s) =>setV(node.list()))
+  return v;
+}
 const AspotContext = createContext(aspot());
 const useAspotContext = () => useContext(AspotContext);
 type Props = {
@@ -35,4 +40,5 @@ export {
   AspotContext,
   AspotWrapper,
   useAspotContext,
+  useNodeList,
 }
