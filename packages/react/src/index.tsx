@@ -5,7 +5,7 @@ import { rootNodeCore } from "@aspot/core/lib/rootNode";
 import { v4 } from "uuid";
 import basicStoreNode from "@aspot/core/lib/basicStoreNode";
 
-function useNode<A extends StoreNode>(node:PredicateNode<A> | SubjectNode<A>)  {
+function useNode<A extends StoreNode>(node:PredicateNode<A>| SubjectNode<A>)  {
 	const [v, setV ] = useState(node.value())
   node.on((s) =>setV(node.value()))
   return v;

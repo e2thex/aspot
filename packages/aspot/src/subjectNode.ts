@@ -26,7 +26,7 @@ export type SubjectNode<A extends StoreNode> = {
   s: SMethod<A>,
   list: () => PredicateNode<A>[],
   on: (action:(...s:Sentence[]) => void) => void,
-  value: any;
+  value: Val;
 }
 type SubjectNodeProps<A extends StoreNode> = {
   node: A,
