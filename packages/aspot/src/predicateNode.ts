@@ -25,27 +25,26 @@ export type Depth = 1|2|3|4|5|6
 export type ValueDepth = {
   [k:string]: ValueDepth | string
 }
+export type Value = string | null;
 export type ValueGenProps = {
   subject: string,
   predicate :string,
   get: StoreGet,
 }
-export type Value = (depth) => void |string | null;
-export type ValueGen = (props:ValueGenProps) => (depth?) => null | string |ValueDepth
+export type Val = <D extends number>(depth?:D) => D extends 1| 2| 3| 4| 5| 6| 7| 8 |9 |10 |11 |12| 13| 14  ? ValueDepth: Value;
+export type ValueGen = (props:ValueGenProps) => Val
 const valueGen =(props:ValueGenProps) => {
   const { subject, predicate, get } = props;
-  function val():string | null
-  function val(depth:number):ValueDepth
-  function val(depth?:number) {
+  const val:Val  = (depth?) => {
     const sentence = get(and(has(TermType.subject)(subject), has(TermType.predicate)(predicate))(emptyContext()))[0];
     const target = sentence ? sentence.object: null;
-    if(!depth) return target
+    if((depth === 0) || (typeof depth === 'undefined')) return target as any
     const sentences = get(s => s.subject === target) 
     return sentences.reduce((result, s) => ({
       ...result,
       [s.predicate]:  valueGen({...props, subject:s.subject, predicate:s.predicate})(depth > 1 ? depth - 1 : undefined)
     })
-    ,{} as ValueDepth)
+    ,{} as any)
   }
   return val;
 }
@@ -65,10 +64,10 @@ export type PredicateNodeProps<A extends StoreNode> = {
 export type SMethod<A extends StoreNode> = (predicate:string) => PredicateNode<A>; 
 export type PredicateNode<A extends StoreNode> = {
   is: Is, 
-  s: SMethod<A>,
   del: (depth?:number) => void,
-  on: (action:(...s:Sentence[]) => void) => void,
   predicate: () => string,
+  s: SMethod<A>,
+  on: (action:(...s:Sentence[]) => void) => void,
   value: any,
 }
 const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (props:PredicateNodeProps<A>): PredicateNode<A> => {
@@ -77,14 +76,13 @@ const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (pro
   const match = and(has(TermType.subject)(subject), has(TermType.predicate)(predicate));
   const fallbackObject = uuid();
   const internalS = (predicateInternal) => {
-    const object = value({...node, subject, predicate:predicate, onSet})() as string | null;
+    const object = value({...node, subject, predicate:predicate, onSet})();
     const newOnSet = () => {
       object ? onSet() : is({...node, onSet,subject, predicate})(fallbackObject);
     }
     return predicateNodeCore(deps)({node, subject:object|| fallbackObject, predicate:predicateInternal, onSet:newOnSet})
   }
   const del = ({subject, predicate}:{subject:string, predicate:string}) => (depth:number=0) => {
-    console.log({subject, predicate, depth});
     const object = value({...node, subject, predicate, onSet:() => {}})();
     is({...node, subject, predicate, onSet:() => {}})(null);
     if (depth && object) {

@@ -1,5 +1,5 @@
 import { MatchContextualized, StoreNode, Watcher } from "../basicStoreNode";
-import { predicateNodeCore, PredicateNodeDeps } from "../predicateNode"
+import { predicateNodeCore, PredicateNodeDeps, Val } from "../predicateNode"
 
 describe("predicateNodeCore", () => {
   const getRootNode = () => ({
@@ -13,10 +13,14 @@ describe("predicateNodeCore", () => {
     it('should call the is func with the current subject predicate and then a null object', ()=> {
       const watcher0 = jest.fn((m:MatchContextualized) => ({}) as Watcher);
       const is = jest.fn((o?:string) => {})
-      const valuef = jest.fn(() => 'o')
+      const valuefa:Val = (depth) => {
+        if((depth === 0) || (typeof depth === 'undefined')) return 's' 
+        return {} as any;
+      };
+      const valuef = jest.fn(valuefa)
       const deps = {
         is: jest.fn(({onSet, subject, predicate, get, set}) => is),
-        value: jest.fn(({subject, predicate, get}) => valuef),
+        value: jest.fn(({subject, predicate, get}) => valuefa),
         watcher: (a) => watcher0,
         uuid: () => 'uuid', 
       };
@@ -31,10 +35,14 @@ describe("predicateNodeCore", () => {
 
       const watcher0 = jest.fn((m:MatchContextualized) => ({}) as Watcher);
       const is = jest.fn((o?:string) => {})
-      const valuef = jest.fn(() => 's')
+      const valuefa:Val = (depth) => {
+        if((depth === 0) || (typeof depth === 'undefined')) return 's' 
+        return {} as any;
+      };
+      const valuef = jest.fn(valuefa)
       const deps = {
         is: jest.fn(({onSet, subject, predicate, get, set}) => is),
-        value: jest.fn(({subject, predicate, get}) => valuef),
+        value: jest.fn(({subject, predicate, get}) => valuefa),
         watcher: (a) => watcher0,
         uuid: () => 'uuid', 
       };

@@ -1,11 +1,11 @@
 import { Sentence, StoreNode, WatcherGen, watcher, StoreGet } from './basicStoreNode'
 import { objectExists } from './match';
-import predicateNode, { OnSet, PredicateNode, PredicateNodeGen, SMethod, Value, ValueDepth, valueGen } from './predicateNode';
+import predicateNode, { OnSet, PredicateNode, PredicateNodeGen, SMethod, Val, Value, ValueDepth, valueGen } from './predicateNode';
 export type SubjectValueGenProps = {
   subject: string,
   get: StoreGet,
 }
-export type SubjectValueGen = (props:SubjectValueGenProps) => Value 
+export type SubjectValueGen = (props:SubjectValueGenProps) => Val
 const subjectValueGen = ({get, subject}:SubjectValueGenProps) => {
   function val():string | null
   function val(depth:number):ValueDepth
@@ -19,7 +19,7 @@ const subjectValueGen = ({get, subject}:SubjectValueGenProps) => {
     ,{} as ValueDepth)
 
   }
-  return val as Value
+  return val as Val;
 }
 
 export type SubjectNode<A extends StoreNode> = {
