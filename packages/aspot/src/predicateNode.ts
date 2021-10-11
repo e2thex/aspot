@@ -68,7 +68,7 @@ export type PredicateNode<A extends StoreNode> = {
   predicate: () => string,
   s: SMethod<A>,
   on: (action:(...s:Sentence[]) => void) => void,
-  value: any,
+  value: Val,
 }
 const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (props:PredicateNodeProps<A>): PredicateNode<A> => {
   const {node, subject, predicate, onSet } = props;

@@ -1,4 +1,4 @@
-import { and, has, isGen as IsGenCore, IsGenProps, objectExists, predicateNode as predicateNodeCore, PredicateNodeProps, TermType, StoreNode } from '@aspot/core';
+import { and, has, isGen as IsGenCore, IsGenProps, objectExists, predicateNode as predicateNodeCore, PredicateNodeProps, TermType, StoreNode, PredicateNode } from '@aspot/core';
 import { useState } from 'react';
 
 const predicateNode =<A extends StoreNode> (props:PredicateNodeProps<A>) => {
@@ -10,6 +10,6 @@ const predicateNode =<A extends StoreNode> (props:PredicateNodeProps<A>) => {
       orginalPredicateNode.on((s) =>setV(s.object))
       return v;
     }
-  })
+  }) as PredicateNode<A>;
 }
 export default predicateNode;

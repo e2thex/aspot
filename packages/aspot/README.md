@@ -64,18 +64,18 @@ to walk the nodes one first use `store.node` to initiate a node.
 const bob = store.node('d47c38d1...')
 ```
 
-we can then start walking the node tree using the `s` function.  and can use the `val` method to get values. One can use multiple `s` calls to keep walking'
+we can then start walking the node tree using the `s` function.  and can use the `value` method to get values. One can use multiple `s` calls to keep walking'
 
 ``` js
-const firstName = bob.s('firstName').val();
-const lastName = bob.s('lastName').val();
-const husbandFirstName = bob.s('husband').s('firstName').val();
+const firstName = bob.s('firstName').value();
+const lastName = bob.s('lastName').value();
+const husbandFirstName = bob.s('husband').s('firstName').value();
 ```
 
-`val` can also be used with a depth prop which will give one a object at depth.
+`value` can also be used with a depth prop which will give one a object at depth.
 
 ``` ts
-const bobData = bob.val(1)
+const bobData = bob.value(1)
 // bobData wouldbe something like
 // {
 //   firstName: 'bob'
@@ -83,7 +83,7 @@ const bobData = bob.val(1)
 //   age: '75',
 //   husband:'fbf8d8d0...'
 // }
-const bobData2 = bob.val(2)
+const bobData2 = bob.value(2)
 // bobData2 wouldbe something like
 // {
 //   firstName: 'bob'
@@ -184,7 +184,7 @@ Returns an array of nodes that are based on the unique subject for the last find
 // get the lastName of everyone person with firstName 'bob'
 const lastNames = store.find(and(has(TermType.predicate)('firstName'), has(TermType.object)('bob'))
   .nodes()
-  .map(node => node.s('lastName').val())
+  .map(node => node.s('lastName').value())
 ```
 
 ##### `list`
@@ -195,5 +195,5 @@ Returns an array of nodes that are based on each statement.
 // get the lastName of everyone that is a boss
 const lastNames = store.find(TermType.predicate)('boss'))
   .list()
-  .map(node => node.s('lastName').val())
+  .map(node => node.s('lastName').value())
 ```
