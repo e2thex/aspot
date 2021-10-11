@@ -76,15 +76,15 @@ const husbandFirstName = bob.s('husband').s('firstName').val();
 
 ``` ts
 const bobData = bob.val(1)
-// bodData wouldbe something like
+// bobData wouldbe something like
 // {
 //   firstName: 'bob'
 //   lastName: 'NewHart'
 //   age: '75',
 //   husband:'fbf8d8d0...'
 // }
-const bobData = bob.val(2)
-// bodData wouldbe something like
+const bobData2 = bob.val(2)
+// bobData2 wouldbe something like
 // {
 //   firstName: 'bob'
 //   lastName: 'NewHart'
@@ -95,6 +95,8 @@ const bobData = bob.val(2)
 //     age: '78',
 //   }
 // }
+```
+
 The `is` function is used to set values
 
 ``` js
