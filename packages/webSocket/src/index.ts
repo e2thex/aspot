@@ -20,6 +20,7 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
       ws.send(JSON.stringify({action:'requestUpdates', group}));
       ws.addEventListener('message', (event) => {
         const {action, ...data } = JSON.parse(event.data);
+        console.log(data);
         if(action === 'update') {
           data.sentences.forEach(onUpdate);
         }
@@ -32,7 +33,7 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
     const sendUpdate = (...sentences:Sentence[]) => {
       const newSentences = sentences.filter(s => !recentSentences.includes(MD5(JSON.stringify(s))))
       if(newSentences.length > 0) {
-        const pack = {action:'update', group, newSentences}
+        const pack = {action:'update', group, sentences:newSentences}
         ws.send(JSON.stringify(pack))
       }
     }
