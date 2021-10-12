@@ -1,13 +1,18 @@
 import { Sentence, StoreNode } from '@aspot/core';
+import { MD5 } from 'crypto-js';
 const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:StoreNode) => {
   const {} = deps;
   if(typeof window !== 'undefined') {
+    const recentSentences = []
     const onUpdate = (sentence:Sentence) => {
+      recentSentences.push(MD5(JSON.stringify(sentence)))
       node.set(sentence);
     }
     const ws = new WebSocket(url);
     const ping = () => {
       ws.send(JSON.stringify({action:'ping'}));
+      // Why we are doing the ping we are going to hackaly do some clean up on recentSentences
+      recentSentences.shift();
       window.setTimeout(ping, 2000);
     }
     ws.addEventListener('open', function (event) {
@@ -25,8 +30,9 @@ const webSocketConnectorCore = (deps) => (url:string, group:string) => (node:Sto
       ping();
     });
     const sendUpdate = (...sentences:Sentence[]) => {
-      if(sentences.length > 0) {
-        const pack = {action:'update', group, sentences}
+      const newSentences = sentences.filter(s => !recentSentences.includes(MD5(JSON.stringify(s))))
+      if(newSentences.length > 0) {
+        const pack = {action:'update', group, newSentences}
         ws.send(JSON.stringify(pack))
       }
     }
