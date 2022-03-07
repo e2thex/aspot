@@ -120,9 +120,9 @@ const childrenfristnames = children.map(n => n.s('firstname'))
 
 ### Searching
 
-To search one using the `find` method of the store.  The point of the find is not to find data but to find a node in the map.  After doing the find one can then walk the nodes to get data or update data.
+To search one using the `find` method of the store. The point of the find is not to find data but to find a node in the map. After doing the find one can then walk the nodes to get data or update data.
 
-The find method takes a match function.  There are a set of helper function that can be used here.
+The find method takes a match function. There are a set of helper function that can be used here.
 
 #### Match Helpers
 
