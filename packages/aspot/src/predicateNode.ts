@@ -1,6 +1,6 @@
 
 
-import { and, has } from "./match";
+import { and, has, or } from "./match";
 import { emptyContext, StoreNode, TermType, watcher, Match, StoreGet, StoreSet, WatcherGen, Sentence, UpdateResponse } from "./basicStoreNode";
 import { v4 } from "uuid";
 import { subjectNodeCore } from "./subjectNode";
@@ -69,6 +69,7 @@ export type PredicateNode<A extends StoreNode> = {
   s: SMethod<A>,
   on: (action:(...s:Sentence[]) => void) => void,
   value: Val,
+  list: () => PredicateNode<A>[],
 }
 const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (props:PredicateNodeProps<A>): PredicateNode<A> => {
   const {node, subject, predicate, onSet } = props;
@@ -89,6 +90,23 @@ const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (pro
       node.get(s => s.subject === object).forEach(s => del({...s})(depth-1))
     }
   }
+  const on = (action) => {
+    const object = value({...node, subject, predicate:predicate, onSet})();
+    const match = or(
+      and(has(TermType.subject)(subject), has(TermType.predicate)(predicate)),
+      has(TermType.subject)(object||fallbackObject)
+    );
+    return node.watch(watcher(action)(match(emptyContext()))) 
+  }
+  const list = () => {
+    const object = value({...node, subject, predicate:predicate, onSet})() || fallbackObject;
+    const newOnSet = () => {
+      object ? onSet() : is({...node, onSet,subject, predicate})(fallbackObject);
+    }
+    return node
+      .get((s) => (s.subject === object) && (s.object !== null))
+      .map(s => predicateNodeCore(deps)({onSet:newOnSet, subject:object, node, predicate:s.predicate}));
+  }
   return Object.assign(
     value({...node, subject, predicate})
     ,{
@@ -96,9 +114,10 @@ const predicateNodeCore = (deps:PredicateNodeDeps) => <A extends StoreNode> (pro
     del: del({subject, predicate}),
     is: is({...node, subject, predicate, onSet}),
     value: value({...node, subject, predicate}),
-    on: (action) => node.watch(watcher(action)(match(emptyContext()))),
+    on: (action) => on,
     s: internalS,
     predicate: () => predicate,
+    list: list,
   });
 }
 const predicateNode = predicateNodeCore({is:isGen, value: valueGen, watcher, uuid:v4});

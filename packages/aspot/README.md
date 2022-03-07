@@ -109,6 +109,15 @@ Along with the `is` method  there is an `on` method that can be pass a function 
 bob.s('age').on(age => sendBirthdayCard('bob', age))
 ```
 
+The `list` function is used to get an array of all children nodes of the current node. This is often used when trying to store data that is more array like. 
+
+``` js
+const children = bob.s('children').list();
+const childrenfristnames = children.map(n => n.s('firstname'))
+// childrenFirstNames would be 
+// ['Cathey', 'Fahren', 'Davey']
+```
+
 ### Searching
 
 To search one using the `find` method of the store.  The point of the find is not to find data but to find a node in the map.  After doing the find one can then walk the nodes to get data or update data.
