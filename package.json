@@ -2,13 +2,13 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^6.1.0"
   },
   "scripts": {
     "tsc": "lerna run tsc",
     "build": "lerna run build",
     "publish": "lerna run build && lerna publish",
-    "lerna" : "lerna"
+    "lerna": "lerna"
   },
   "dependencies": {
     "-": "0.0.1",
