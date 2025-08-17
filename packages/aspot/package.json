@@ -1,6 +1,6 @@
 {
   "name": "@aspot/core",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Provides a store that composes all data as Subject Predicate Object sentences",
   "author": "Summerfield, Erik <erik@e2thex.org>",
   "homepage": "https://github.com/e2thex/aspot#readme",
@@ -29,20 +29,21 @@
     "url": "https://github.com/e2thex/aspot/issues"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-typescript": "^7.15.0",
+    "@babel/types": "^7.15.0",
     "@types/jest": "^27.0.2",
+    "babel-jest": "^27.2.1",
     "jest": "^27.2.3",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6",
-    "@babel/preset-typescript": "^7.15.0",
-    "babel-jest": "^27.2.1",
     "crypto-js": "^4.1.1"
   },
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "d2983de2e3bf4635571391477878259639ff53c6"
+  "gitHead": "2983de2e3bf4635571391477878259639ff53c6"
 }
