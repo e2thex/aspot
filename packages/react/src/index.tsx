@@ -1,19 +1,43 @@
-import { ComponentType, useContext,createContext, useState } from "react";
+import { ComponentType, useContext, createContext, useState, useEffect, useRef } from "react";
 import { StoreNode, PredicateNode, SubjectNode, aspot, RootNode, SubjectNodeGen, subjectNodeCore, watcher, resultNodeGen, subjectValueGen } from "@aspot/core";
 import predicateNode from './predicateNode';
 import { rootNodeCore } from "@aspot/core/lib/rootNode";
 import { v4 } from "uuid";
 import basicStoreNode from "@aspot/core/lib/basicStoreNode";
 
-function useNode<A extends StoreNode>(node:PredicateNode<A>| SubjectNode<A>)  {
-	const [v, setV ] = useState(node.value())
-  node.on((s) =>setV(node.value()))
-  return v;
+function useNode<A extends StoreNode>(node: PredicateNode<A> | SubjectNode<A>) {
+	const [v, setV] = useState(node.value());
+	const nodeRef = useRef(node);
+	
+	useEffect(() => {
+		// Set initial value
+		setV(node.value());
+		
+		// Subscribe to changes
+		node.on((s) => setV(node.value()));
+		
+		// Note: The current system doesn't support unsubscribing
+		// This is a limitation of the current architecture
+	}, [node]);
+	
+	return v;
 }
-function useNodeList<A extends StoreNode>(node:PredicateNode<A>| SubjectNode<A>)  {
-	const [v, setV ] = useState(node.list())
-  node.on((s) =>setV(node.list()))
-  return v;
+
+function useNodeList<A extends StoreNode>(node: PredicateNode<A> | SubjectNode<A>) {
+	const [v, setV] = useState(node.list());
+	
+	useEffect(() => {
+		// Set initial value
+		setV(node.list());
+		
+		// Subscribe to changes
+		node.on((s) => setV(node.list()));
+		
+		// Note: The current system doesn't support unsubscribing
+		// This is a limitation of the current architecture
+	}, [node]);
+	
+	return v;
 }
 const AspotContext = createContext(aspot());
 const useAspotContext = () => useContext(AspotContext);
